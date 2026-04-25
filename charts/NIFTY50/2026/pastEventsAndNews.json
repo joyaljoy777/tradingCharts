@@ -1,0 +1,332 @@
+[
+  {
+    "date": "01-01-2026",
+    "type": "Global News",
+    "content": "Weak US tech sentiment; cautious start to the year despite auto sales expectations",
+    "impact": "low",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "02-01-2026",
+    "type": "Market Event",
+    "content": "NIFTY hits record high driven by optimism on Q3 earnings and corporate outlook",
+    "impact": "high",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bullish"
+  },
+  {
+    "date": "05-01-2026",
+    "type": "Global News",
+    "content": "Risk-off sentiment due to US-Venezuela tensions and weak rupee",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "06-01-2026",
+    "type": "Company Event",
+    "content": "Profit booking in heavyweights like HDFC Bank and Reliance drags index",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "07-01-2026",
+    "type": "Global News",
+    "content": "FII selling and tariff concerns weigh on market sentiment",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "08-01-2026",
+    "type": "Global News",
+    "content": "Geopolitical tensions and foreign outflows keep markets cautious",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "09-01-2026",
+    "type": "Market Event",
+    "content": "Broad selloff as global uncertainty increases",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "12-01-2026",
+    "type": "Global News",
+    "content": "Positive cues from US-India trade sentiment support recovery",
+    "impact": "low",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bullish"
+  },
+  {
+    "date": "13-01-2026",
+    "type": "Macro",
+    "content": "Crude oil rise, rupee weakness, and FII selling pressure markets",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "23-01-2026",
+    "type": "Market Event",
+    "content": "Foreign investor profit booking leads to weakness",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "30-01-2026",
+    "type": "Macro",
+    "content": "Economic Survey optimism offset by high oil prices and weak rupee",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "neutral"
+  },
+  {
+    "date": "01-02-2026",
+    "type": "Macro Event",
+    "content": "Union Budget 2026 triggers volatility and sharp selloff",
+    "impact": "high",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "02-02-2026",
+    "type": "Market Event",
+    "content": "Market rebounds after budget selloff as investors reassess",
+    "impact": "high",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bullish"
+  },
+  {
+    "date": "06-02-2026",
+    "type": "Macro Event",
+    "content": "RBI keeps repo rate unchanged at 5.25 percent",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["BANKNIFTY", "NIFTY50"],
+    "sentiment": "neutral"
+  },
+  {
+    "date": "10-02-2026",
+    "type": "Market Event",
+    "content": "FII inflows and strong auto sector support gains",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bullish"
+  },
+  {
+    "date": "13-02-2026",
+    "type": "Sector News",
+    "content": "IT sector selloff driven by global tech concerns",
+    "impact": "high",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "20-02-2026",
+    "type": "Sector News",
+    "content": "Infosys and IT stocks drag index amid global tech weakness",
+    "impact": "high",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "23-02-2026",
+    "type": "Global News",
+    "content": "US Supreme Court rejects tariffs improving global sentiment",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bullish"
+  },
+  {
+    "date": "26-02-2026",
+    "type": "Sector News",
+    "content": "IT and pharma support market while FMCG lags",
+    "impact": "low",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bullish"
+  },
+  {
+    "date": "04-03-2026",
+    "type": "Global News",
+    "content": "Rising global risks trigger market decline",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "06-03-2026",
+    "type": "Sector News",
+    "content": "Banking and auto stocks drag market while IT shows resilience",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "16-03-2026",
+    "type": "Market Event",
+    "content": "Strong rebound led by banking and auto sectors",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bullish"
+  },
+  {
+    "date": "20-03-2026",
+    "type": "Macro",
+    "content": "Cooling oil prices support relief rally",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bullish"
+  },
+  {
+    "date": "25-03-2026",
+    "type": "Global News",
+    "content": "Easing US-Iran tensions improve sentiment",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bullish"
+  },
+  {
+    "date": "27-03-2026",
+    "type": "Global News",
+    "content": "Iran conflict concerns, high crude, and FII outflows drag market",
+    "impact": "high",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "30-03-2026",
+    "type": "Market Event",
+    "content": "Continued broad selloff due to risk-off sentiment",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "31-03-2026",
+    "type": "Holiday",
+    "content": "Market closed for Mahavir Jayanti",
+    "impact": "low",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "neutral"
+  },
+  {
+    "date": "01-04-2026",
+    "type": "Holiday",
+    "content": "Market closed for annual bank closing",
+    "impact": "low",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "neutral"
+  },
+  {
+    "date": "03-04-2026",
+    "type": "Holiday",
+    "content": "Market closed for Good Friday",
+    "impact": "low",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "neutral"
+  },
+  {
+    "date": "13-04-2026",
+    "type": "Market Event",
+    "content": "Market declines amid cautious sentiment in shortened trading week",
+    "impact": "medium",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "14-04-2026",
+    "type": "Holiday",
+    "content": "Market closed for Ambedkar Jayanti",
+    "impact": "low",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "neutral"
+  },
+  {
+    "date": "23-04-2026",
+    "type": "Global News",
+    "content": "Renewed US-Iran tensions and naval conflict concerns impact sentiment",
+    "impact": "high",
+    "event_status": "actual",
+    "certainty": "medium",
+    "affected_indices": ["NIFTY50", "BANKNIFTY"],
+    "sentiment": "bearish"
+  },
+  {
+    "date": "24-04-2026",
+    "type": "Sector News",
+    "content": "IT stocks fall sharply; Infosys hits 52-week low dragging index",
+    "impact": "high",
+    "event_status": "actual",
+    "certainty": "high",
+    "affected_indices": ["NIFTY50"],
+    "sentiment": "bearish"
+  }
+]

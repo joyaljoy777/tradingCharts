@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Indian Market Influence Events Schema",
+  "description": "Schema for historical and future events/news that influence or may influence NIFTY50 and BANKNIFTY.",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "date",
+      "event_type",
+      "content",
+      "impact",
+      "event_status",
+      "certainty",
+      "affected_indices",
+      "sentiment"
+    ],
+    "properties": {
+      "date": {
+        "type": "string",
+        "description": "Event date in DD-MM-YYYY format.",
+        "pattern": "^(0[1-9]|[12][0-9]|3[01])-(0[1-9]|1[0-2])-\\d{4}$"
+      },
+      "event_type": {
+        "type": "string",
+        "description": "High-level category of the event or news.",
+        "enum": [
+          "Global News",
+          "Domestic News",
+          "Macro",
+          "Macro Event",
+          "Market Event",
+          "Sector News",
+          "Company Event",
+          "Policy",
+          "Geopolitical",
+          "Global Central Bank",
+          "Political Event",
+          "Global Political Event",
+          "Global Flow Event",
+          "Global Macro Cluster",
+          "Holiday",
+          "Earnings Event",
+          "Other"
+        ]
+      },
+      "content": {
+        "type": "string",
+        "description": "Short description of the event or news.",
+        "minLength": 1
+      },
+      "impact": {
+        "type": "string",
+        "description": "Estimated strength of market impact.",
+        "enum": ["high", "medium", "low"]
+      },
+      "event_status": {
+        "type": "string",
+        "description": "Whether the event is historical or future-looking.",
+        "enum": ["actual", "scheduled", "expected"]
+      },
+      "certainty": {
+        "type": "string",
+        "description": "Confidence in the event and/or its likely market relevance.",
+        "enum": ["high", "medium", "low"]
+      },
+      "affected_indices": {
+        "type": "array",
+        "description": "Indices likely affected by the event.",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+          "type": "string",
+          "enum": ["NIFTY50", "BANKNIFTY"]
+        }
+      },
+      "sentiment": {
+        "type": "string",
+        "description": "Likely directional effect on NIFTY50.",
+        "enum": ["bullish", "bearish", "neutral", "unknown"]
+      },
+      "notes": {
+        "type": "string",
+        "description": "Optional notes or caveats."
+      },
+      "source": {
+        "type": "string",
+        "description": "Optional source reference."
+      }
+    }
+  }
+}
