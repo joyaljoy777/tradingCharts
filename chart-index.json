@@ -1,0 +1,14 @@
+---
+---
+{
+  "generatedAt": {{ site.time | date_to_xmlschema | jsonify }},
+  "entries": [
+    {% assign chart_files = site.static_files | where_exp: "file", "file.path contains '/charts/'" | sort: "path" %}
+    {% for file in chart_files %}
+      {
+        "path": {{ file.path | remove_first: "/" | jsonify }},
+        "url": {{ file.path | relative_url | jsonify }}
+      }{% unless forloop.last %},{% endunless %}
+    {% endfor %}
+  ]
+}
