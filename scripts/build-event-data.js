@@ -8,7 +8,8 @@ const outputPath = path.join(ROOT, "event-data.js");
 const fileToKind = {
   "pastEventsAndNews.json": "past",
   "futureEventsAndNews.json": "future",
-  "holiday.json": "holiday"
+  "holiday.json": "holiday",
+  "pnl.json": "pnl"
 };
 
 function readJson(filePath) {
@@ -53,6 +54,19 @@ if (fs.existsSync(chartsDir)) {
 
     if (relativePath.length === 2) {
       payload.resources[symbol].root[kind] = readJson(fullPath);
+      return;
+    }
+
+    if (kind === "pnl" && relativePath.length === 4) {
+      const year = relativePath[1];
+      if (!year) {
+        return;
+      }
+
+      payload.resources[symbol].years[year] = payload.resources[symbol].years[year] || {};
+      payload.resources[symbol].years[year].pnl =
+        payload.resources[symbol].years[year].pnl || [];
+      payload.resources[symbol].years[year].pnl.push(...readJson(fullPath));
       return;
     }
 

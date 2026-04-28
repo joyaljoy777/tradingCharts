@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 
 const rootDir = path.resolve(__dirname, "..");
+const chartsDir = path.join(rootDir, "charts");
 const port = Number(process.env.PORT || 4173);
 const host = process.env.HOST || "127.0.0.1";
 
@@ -17,6 +18,7 @@ const mimeTypes = {
   ".svg": "image/svg+xml",
   ".ico": "image/x-icon"
 };
+const chartImagePattern = /\.(png|jpe?g)$/i;
 
 function send(res, statusCode, headers, body) {
   res.writeHead(statusCode, headers);
@@ -35,7 +37,67 @@ function getSafePath(requestUrl) {
   return fullPath;
 }
 
+function toPosixPath(value) {
+  return value.split(path.sep).join("/");
+}
+
+function collectChartEntries(dirPath, entries) {
+  const items = fs.readdirSync(dirPath, { withFileTypes: true });
+
+  items.forEach((item) => {
+    const fullPath = path.join(dirPath, item.name);
+    if (item.isDirectory()) {
+      collectChartEntries(fullPath, entries);
+      return;
+    }
+
+    const relativePath = toPosixPath(path.relative(rootDir, fullPath));
+    if (!relativePath.startsWith("charts/") || !chartImagePattern.test(relativePath)) {
+      return;
+    }
+
+    entries.push({
+      path: relativePath,
+      url: `/${relativePath}`
+    });
+  });
+}
+
+function buildChartIndexPayload() {
+  const entries = [];
+
+  if (fs.existsSync(chartsDir)) {
+    collectChartEntries(chartsDir, entries);
+  }
+
+  entries.sort((left, right) => left.path.localeCompare(right.path, undefined, { numeric: true }));
+
+  return JSON.stringify(
+    {
+      generatedAt: new Date().toISOString(),
+      entries
+    },
+    null,
+    2
+  );
+}
+
 const server = http.createServer((req, res) => {
+  const pathname = decodeURIComponent(new URL(req.url || "/", `http://${host}:${port}`).pathname);
+  if (pathname === "/chart-index.json") {
+    send(
+      res,
+      200,
+      {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "no-store, max-age=0",
+        "Access-Control-Allow-Origin": "*"
+      },
+      buildChartIndexPayload()
+    );
+    return;
+  }
+
   const fullPath = getSafePath(req.url || "/");
   if (!fullPath) {
     send(res, 403, { "Content-Type": "text/plain; charset=utf-8" }, "Forbidden");

@@ -3,7 +3,7 @@
 {
   "generatedAt": {{ site.time | date_to_xmlschema | jsonify }},
   "entries": [
-    {% assign chart_files = site.static_files | where_exp: "file", "file.path contains '/charts/'" | sort: "path" %}
+    {% assign chart_files = site.static_files | where_exp: "file", "file.path contains '/charts/' and (file.extname == '.png' or file.extname == '.jpg' or file.extname == '.jpeg')" | sort: "path" %}
     {% for file in chart_files %}
       {
         "path": {{ file.path | remove_first: "/" | jsonify }},
