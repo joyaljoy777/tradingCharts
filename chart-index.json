@@ -3,12 +3,19 @@
 {
   "generatedAt": {{ site.time | date_to_xmlschema | jsonify }},
   "entries": [
-    {% assign chart_files = site.static_files | where_exp: "file", "file.path contains '/charts/' and (file.extname == '.png' or file.extname == '.jpg' or file.extname == '.jpeg')" | sort: "path" %}
-    {% for file in chart_files %}
-      {
-        "path": {{ file.path | remove_first: "/" | jsonify }},
-        "url": {{ file.path | relative_url | jsonify }}
-      }{% unless forloop.last %},{% endunless %}
+    {% assign sorted_static_files = site.static_files | sort: "path" %}
+    {% assign first_chart_entry = true %}
+    {% for file in sorted_static_files %}
+      {% if file.path contains '/charts/' %}
+        {% if file.extname == '.png' or file.extname == '.jpg' or file.extname == '.jpeg' %}
+          {% unless first_chart_entry %},{% endunless %}
+          {
+            "path": {{ file.path | remove_first: "/" | jsonify }},
+            "url": {{ file.path | relative_url | jsonify }}
+          }
+          {% assign first_chart_entry = false %}
+        {% endif %}
+      {% endif %}
     {% endfor %}
   ]
 }
