@@ -1471,26 +1471,6 @@ window.TRADING_CHART_EMBEDDED_DATA = {
               "loss": 0
             },
             {
-              "date": "02-12-2026",
-              "profit": 5000,
-              "loss": 0
-            },
-            {
-              "date": "03-12-2026",
-              "profit": 0,
-              "loss": 10000
-            },
-            {
-              "date": "02-07-2026",
-              "profit": 10000,
-              "loss": 0
-            },
-            {
-              "date": "03-07-2026",
-              "profit": 0,
-              "loss": 5000
-            },
-            {
               "date": "02-03-2026",
               "profit": 0,
               "loss": 1525
@@ -1564,16 +1544,6 @@ window.TRADING_CHART_EMBEDDED_DATA = {
               "date": "30-03-2026",
               "profit": 0,
               "loss": 293494.5
-            },
-            {
-              "date": "04-05-2026",
-              "profit": 20000,
-              "loss": 0
-            },
-            {
-              "date": "05-05-2026",
-              "profit": 0,
-              "loss": 10000
             }
           ],
           "holiday": [
@@ -1640,20 +1610,6 @@ window.TRADING_CHART_EMBEDDED_DATA = {
             {
               "date": "25-12-2026",
               "name": "Christmas"
-            }
-          ]
-        },
-        "2027": {
-          "pnl": [
-            {
-              "date": "04-01-2027",
-              "profit": 15000,
-              "loss": 0
-            },
-            {
-              "date": "05-01-2027",
-              "profit": 0,
-              "loss": 10000
             }
           ]
         }
