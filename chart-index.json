@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-29T13:16:21.620Z",
+  "generatedAt": "2026-04-29T13:40:54.235Z",
   "entries": [
     {
       "path": "charts/BANKNIFTY/2026/April/1-04-2026.png",
@@ -774,22 +774,6 @@
       "url": "./charts/P_AND_L_AND_LEARNINGS/2026/april/29-04-2026_4.jpeg"
     },
     {
-      "path": "charts/P_AND_L_AND_LEARNINGS/2026/december/2-12-2026_1.jpg",
-      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/december/2-12-2026_1.jpg"
-    },
-    {
-      "path": "charts/P_AND_L_AND_LEARNINGS/2026/december/3-12-2026_1.jpg",
-      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/december/3-12-2026_1.jpg"
-    },
-    {
-      "path": "charts/P_AND_L_AND_LEARNINGS/2026/july/2-07-2026_1.jpg",
-      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/july/2-07-2026_1.jpg"
-    },
-    {
-      "path": "charts/P_AND_L_AND_LEARNINGS/2026/july/3-07-2026_1.jpg",
-      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/july/3-07-2026_1.jpg"
-    },
-    {
       "path": "charts/P_AND_L_AND_LEARNINGS/2026/march/2-03-2026_1.jpg",
       "url": "./charts/P_AND_L_AND_LEARNINGS/2026/march/2-03-2026_1.jpg"
     },
@@ -852,22 +836,6 @@
     {
       "path": "charts/P_AND_L_AND_LEARNINGS/2026/march/30-03-2026_1.jpg",
       "url": "./charts/P_AND_L_AND_LEARNINGS/2026/march/30-03-2026_1.jpg"
-    },
-    {
-      "path": "charts/P_AND_L_AND_LEARNINGS/2026/may/4-05-2026_1.jpg",
-      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/may/4-05-2026_1.jpg"
-    },
-    {
-      "path": "charts/P_AND_L_AND_LEARNINGS/2026/may/5-05-2026_1.jpg",
-      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/may/5-05-2026_1.jpg"
-    },
-    {
-      "path": "charts/P_AND_L_AND_LEARNINGS/2027/january/4-01-2027_1.jpg",
-      "url": "./charts/P_AND_L_AND_LEARNINGS/2027/january/4-01-2027_1.jpg"
-    },
-    {
-      "path": "charts/P_AND_L_AND_LEARNINGS/2027/january/5-01-2027_1.jpg",
-      "url": "./charts/P_AND_L_AND_LEARNINGS/2027/january/5-01-2027_1.jpg"
     }
   ]
 }
