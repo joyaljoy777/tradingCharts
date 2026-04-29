@@ -371,8 +371,8 @@ Behavior:
 
 Important:
 
-- do **not** add `.nojekyll`
-- `chart-index.json` contains Jekyll/Liquid and must be processed by GitHub Pages
+- this project can run as plain static hosting (no Jekyll processing required)
+- `chart-index.json` is generated locally as plain JSON
 
 ## Updating content later
 
@@ -380,8 +380,16 @@ Important:
 
 1. Add screenshots to the correct symbol/year/month folder
 2. Make sure the filename date is correct
-3. Push
-4. Refresh GitHub Pages
+3. Rebuild chart index locally:
+
+```bash
+node scripts/build-chart-index.js
+```
+
+4. Commit and push both:
+- the updated `chart-index.json`
+- the new/changed screenshot files
+5. Refresh GitHub Pages
 
 ### Events and holidays
 
@@ -405,8 +413,16 @@ node scripts/build-event-data.js
 1. Add or edit `pnl.json` inside the target month folder
 2. Use one object per date with `date`, `profit`, and `loss`
 3. Make sure the `date` values are correct
-4. Push
-5. Refresh GitHub Pages
+4. Rebuild embedded fallback data locally:
+
+```bash
+node scripts/build-event-data.js
+```
+
+5. Commit and push both:
+- the updated `event-data.js`
+- the new/changed month `pnl.json` files
+6. Refresh GitHub Pages
 
 Examples:
 
@@ -416,7 +432,7 @@ charts/P_AND_L_AND_LEARNINGS/2026/july/pnl.json
 charts/P_AND_L_AND_LEARNINGS/2026/august/pnl.json
 ```
 
-For direct `file://` testing only, rebuild the embedded fallback after adding a new month or changing P&L JSON:
+For direct `file://` testing only, rebuilding `event-data.js` is required after adding a new month or changing P&L JSON:
 
 ```bash
 node scripts/build-event-data.js
@@ -426,6 +442,13 @@ If you want new month folders to appear dynamically during local testing without
 
 ```bash
 node scripts/serve-local.js
+```
+
+For fully static GitHub Pages updates after adding screenshots or JSON, run both generators before commit:
+
+```bash
+node scripts/build-chart-index.js
+node scripts/build-event-data.js
 ```
 
 ## Troubleshooting
