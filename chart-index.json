@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-04-30T08:29:37.366Z",
+  "generatedAt": "2026-04-30T10:08:29.099Z",
   "entries": [
     {
       "path": "charts/BANKNIFTY/2026/April/1-04-2026.png",
@@ -76,6 +76,10 @@
     {
       "path": "charts/BANKNIFTY/2026/April/29-04-2026.png",
       "url": "./charts/BANKNIFTY/2026/April/29-04-2026.png"
+    },
+    {
+      "path": "charts/BANKNIFTY/2026/April/30-04-2026.jpeg",
+      "url": "./charts/BANKNIFTY/2026/April/30-04-2026.jpeg"
     },
     {
       "path": "charts/BANKNIFTY/2026/February/1-02-2026.png",
@@ -392,6 +396,10 @@
     {
       "path": "charts/NIFTY50/2026/april/29-04-2026.png",
       "url": "./charts/NIFTY50/2026/april/29-04-2026.png"
+    },
+    {
+      "path": "charts/NIFTY50/2026/april/30-04-2026.jpeg",
+      "url": "./charts/NIFTY50/2026/april/30-04-2026.jpeg"
     },
     {
       "path": "charts/NIFTY50/2026/february/01-02-2026.png",
@@ -780,6 +788,10 @@
     {
       "path": "charts/P_AND_L_AND_LEARNINGS/2026/april/30-04-2026_2.jpeg",
       "url": "./charts/P_AND_L_AND_LEARNINGS/2026/april/30-04-2026_2.jpeg"
+    },
+    {
+      "path": "charts/P_AND_L_AND_LEARNINGS/2026/april/30-04-2026_3.jpeg",
+      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/april/30-04-2026_3.jpeg"
     },
     {
       "path": "charts/P_AND_L_AND_LEARNINGS/2026/march/2-03-2026_1.jpg",
