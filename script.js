@@ -1,7 +1,16 @@
 "use strict";
 
 var IMAGE_PATTERN = /\.(png|jpe?g)$/i;
-var DEFAULT_SYMBOLS = ["NIFTY50", "BANKNIFTY", "P_AND_L_AND_LEARNINGS"];
+var DEFAULT_SYMBOLS = [
+  "NIFTY50",
+  "BANKNIFTY",
+  "P_AND_L_AND_LEARNINGS",
+  "FII_DII",
+  "FII_DII_ANALYTICS",
+  "MARKET_SENTIMENT"
+];
+var ANALYTICS_SYMBOLS = ["FII_DII", "FII_DII_ANALYTICS"];
+var NON_CALENDAR_SYMBOLS = ANALYTICS_SYMBOLS.concat(["MARKET_SENTIMENT"]);
 var MIN_LIGHTBOX_ZOOM = 1;
 var MAX_LIGHTBOX_ZOOM = 4;
 var LIGHTBOX_ZOOM_STEP = 0.25;
@@ -638,6 +647,10 @@ function clearIndexMonth(target, symbol, yearMonth) {
   var monthPicker = document.getElementById("monthPicker");
   var prevMonthBtn = document.getElementById("prevMonthBtn");
   var nextMonthBtn = document.getElementById("nextMonthBtn");
+  var calendarShell = document.querySelector(".calendar-shell");
+  var analyticsShell = document.getElementById("analyticsShell");
+  var analyticsInsightsShell = document.getElementById("fiiDiiInsightsShell");
+  var marketSentimentShell = document.getElementById("marketSentimentShell");
   var calendarGrid = document.getElementById("calendarGrid");
   var monthStatus = document.getElementById("monthStatus");
   var emptyState = document.getElementById("emptyState");
@@ -750,6 +763,30 @@ function clearIndexMonth(target, symbol, yearMonth) {
 
   function getAllSymbols() {
     return chartIndex.symbols.slice();
+  }
+
+  function isAnalyticsSymbol(symbol) {
+    return ANALYTICS_SYMBOLS.indexOf(symbol) !== -1;
+  }
+
+  function isNonCalendarSymbol(symbol) {
+    return NON_CALENDAR_SYMBOLS.indexOf(symbol) !== -1;
+  }
+
+  function getSymbolLabel(symbol) {
+    if (symbol === "FII_DII") {
+      return "FII / DII Flow";
+    }
+
+    if (symbol === "FII_DII_ANALYTICS") {
+      return "FII & DII Analytics";
+    }
+
+    if (symbol === "MARKET_SENTIMENT") {
+      return "Market Sentiment";
+    }
+
+    return symbol;
   }
 
   function getEntriesForMonth(symbol, yearMonth) {
@@ -2025,6 +2062,11 @@ function clearIndexMonth(target, symbol, yearMonth) {
   }
 
   function renderCalendar() {
+    if (isNonCalendarSymbol(state.symbol)) {
+      showNonCalendarView();
+      return;
+    }
+
     state.renderToken += 1;
     var renderToken = state.renderToken;
 
@@ -2116,9 +2158,59 @@ function clearIndexMonth(target, symbol, yearMonth) {
     }
   }
 
+  function showNonCalendarView() {
+    releaseThumbnailReferences();
+    calendarGrid.replaceChildren();
+    state.activeMonthEntries = {};
+    monthStatus.textContent = "";
+    updateContentView();
+    updateEmptyState(true);
+  }
+
+  function updateContentView() {
+    var nonCalendarMode = isNonCalendarSymbol(state.symbol);
+    var flowMode = state.symbol === "FII_DII";
+    var insightsMode = state.symbol === "FII_DII_ANALYTICS";
+    var marketMode = state.symbol === "MARKET_SENTIMENT";
+
+    if (calendarShell) {
+      calendarShell.classList.toggle("is-hidden-view", nonCalendarMode);
+    }
+
+    if (analyticsShell) {
+      analyticsShell.classList.toggle("is-hidden-view", !flowMode);
+    }
+
+    if (analyticsInsightsShell) {
+      analyticsInsightsShell.classList.toggle("is-hidden-view", !insightsMode);
+    }
+
+    if (marketSentimentShell) {
+      marketSentimentShell.classList.toggle("is-hidden-view", !marketMode);
+    }
+
+    if (monthStatus) {
+      monthStatus.hidden = nonCalendarMode;
+    }
+  }
+
   function syncControls() {
     symbolSelect.value = state.symbol;
     monthPicker.value = state.yearMonth;
+    var nonCalendarMode = isNonCalendarSymbol(state.symbol);
+    monthPicker.disabled = nonCalendarMode;
+    prevMonthBtn.disabled = nonCalendarMode;
+    nextMonthBtn.disabled = nonCalendarMode;
+    updateContentView();
+  }
+
+  function dispatchSelectionChange() {
+    window.dispatchEvent(new CustomEvent("trading-chart-selection-change", {
+      detail: {
+        symbol: state.symbol,
+        yearMonth: state.yearMonth
+      }
+    }));
   }
 
   function setState(nextSymbol, nextYearMonth) {
@@ -2126,6 +2218,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
     state.yearMonth = nextYearMonth;
     syncControls();
     renderCalendar();
+    dispatchSelectionChange();
   }
 
   function populateSymbolSelect() {
@@ -2134,7 +2227,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
     getAllSymbols().forEach(function addOption(symbol) {
       var option = document.createElement("option");
       option.value = symbol;
-      option.textContent = symbol;
+      option.textContent = getSymbolLabel(symbol);
       fragment.appendChild(option);
     });
 
@@ -2232,6 +2325,10 @@ function clearIndexMonth(target, symbol, yearMonth) {
   }
 
   async function loadTemporalDataForSelection(symbol, yearMonth) {
+    if (isNonCalendarSymbol(symbol)) {
+      return;
+    }
+
     var hadEmbeddedData = state.embeddedTemporalDataApplied;
     if (applyEmbeddedTemporalData()) {
       if (!hadEmbeddedData && state.symbol === symbol && state.yearMonth === yearMonth) {
@@ -2311,6 +2408,10 @@ function clearIndexMonth(target, symbol, yearMonth) {
   }
 
   async function loadPnlDataForSelection(symbol, yearMonth) {
+    if (isNonCalendarSymbol(symbol)) {
+      return;
+    }
+
     var hadEmbeddedData = state.embeddedTemporalDataApplied;
     if (applyEmbeddedTemporalData()) {
       if (!hadEmbeddedData && state.symbol === symbol && state.yearMonth === yearMonth) {

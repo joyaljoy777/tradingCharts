@@ -10,7 +10,12 @@
     />
     <link rel="stylesheet" href="styles.css" />
     <script defer src="event-data.js"></script>
+    <script defer src="fii-dii-data.js"></script>
     <script defer src="script.js"></script>
+    <script defer src="market-sentiment.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+    <script defer src="fii-dii-chart.js"></script>
+    <script defer src="fii-dii-insights.js"></script>
   </head>
   <body>
     <div class="page-shell">
@@ -93,6 +98,248 @@
             <p class="empty-copy">
               Switch the month or pick another symbol to inspect saved screenshots.
             </p>
+          </div>
+        </section>
+
+        <section
+          id="analyticsShell"
+          class="analytics-shell is-hidden-view"
+          aria-label="FII DII and NIFTY chart"
+        >
+          <div class="analytics-toolbar" aria-label="FII DII chart controls">
+            <div class="analytics-controls">
+              <label class="control-field control-field--compact">
+                <span class="control-label">From</span>
+                <input id="fiiDiiFromMonth" name="fiiDiiFromMonth" type="month" />
+              </label>
+
+              <label class="control-field control-field--compact">
+                <span class="control-label">To</span>
+                <input id="fiiDiiToMonth" name="fiiDiiToMonth" type="month" />
+              </label>
+
+              <div class="control-field control-field--compact analytics-mode-field">
+                <span class="control-label">Mode</span>
+                <div class="analytics-mode-row">
+                  <button
+                    id="fiiDiiModePaired"
+                    class="analytics-toggle-button analytics-toggle-button--mode is-active"
+                    type="button"
+                    data-flow-mode="paired"
+                    aria-pressed="true"
+                    >
+                      Paired
+                    </button>
+
+                  <button
+                    id="fiiDiiModeNet"
+                    class="analytics-toggle-button analytics-toggle-button--mode"
+                    type="button"
+                    data-flow-mode="net"
+                    aria-pressed="false"
+                  >
+                    Net
+                  </button>
+
+                  <div
+                    id="fiiDiiPairedStyleField"
+                    class="analytics-inline-toggle"
+                  >
+                    <span id="fiiDiiPairedStyleLabel" class="analytics-inline-toggle-label">
+                      Bar
+                    </span>
+                    <button
+                      id="fiiDiiPairedStyleToggle"
+                      class="analytics-switch"
+                      type="button"
+                      role="switch"
+                      aria-checked="false"
+                      aria-label="Paired chart style"
+                    >
+                      <span class="analytics-switch-track">
+                        <span class="analytics-switch-thumb"></span>
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ma-dock">
+              <p id="fiiDiiStatus" class="sr-only" aria-live="polite"></p>
+              <button id="fiiDiiAddMaBtn" class="analytics-action-button" type="button">
+                + Add MA
+              </button>
+              <div id="fiiDiiMaList" class="ma-list" aria-live="polite"></div>
+            </div>
+          </div>
+
+          <div id="fiiDiiMaEditor" class="ma-editor-popover" hidden></div>
+
+          <div id="fiiDiiEmptyState" class="empty-state analytics-empty-state" hidden>
+            <p class="empty-title">No FII / DII data in this range</p>
+            <p class="empty-copy">
+              Adjust the month range or switch back to the most recent available window.
+            </p>
+          </div>
+
+          <div
+            id="fiiDiiChart"
+            class="analytics-chart"
+            role="img"
+            aria-label="FII DII and NIFTY 50 chart"
+          ></div>
+        </section>
+
+        <section
+          id="fiiDiiInsightsShell"
+          class="analytics-shell analytics-dashboard-shell is-hidden-view"
+          aria-label="FII and DII analytics dashboard"
+        >
+          <div class="insights-toolbar" aria-label="FII and DII analytics filters">
+            <label class="control-field control-field--compact">
+              <span class="control-label">From</span>
+              <input id="fiiDiiInsightsFromMonth" name="fiiDiiInsightsFromMonth" type="month" />
+            </label>
+
+            <label class="control-field control-field--compact">
+              <span class="control-label">To</span>
+              <input id="fiiDiiInsightsToMonth" name="fiiDiiInsightsToMonth" type="month" />
+            </label>
+
+            <label class="control-field control-field--compact">
+              <span class="control-label">Calendar Month</span>
+              <select id="fiiDiiInsightsMonthSelect" name="fiiDiiInsightsMonthSelect">
+                <option value="all">All months</option>
+                <option value="0">January</option>
+                <option value="1">February</option>
+                <option value="2">March</option>
+                <option value="3">April</option>
+                <option value="4">May</option>
+                <option value="5">June</option>
+                <option value="6">July</option>
+                <option value="7">August</option>
+                <option value="8">September</option>
+                <option value="9">October</option>
+                <option value="10">November</option>
+                <option value="11">December</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="insights-topbar">
+            <div id="fiiDiiInsightsKpis" class="insights-kpis" aria-live="polite"></div>
+            <div class="insights-context">
+              <p class="insights-context-title">Pattern snapshot</p>
+              <p id="fiiDiiInsightsStatus" class="insights-context-copy">
+                Loading five yearly files…
+              </p>
+            </div>
+          </div>
+
+          <div id="fiiDiiInsightsEmptyState" class="empty-state analytics-empty-state" hidden>
+            <p class="empty-title">No analytics data available</p>
+            <p class="empty-copy">
+              Check the yearly FII / DII JSON files and try again.
+            </p>
+          </div>
+
+          <div class="insights-grid">
+            <article class="insight-card">
+              <div class="insight-card-copy">
+                <p class="insight-card-eyebrow">Weekday Pattern</p>
+                <h2 class="insight-card-title">Net flow by trading weekday</h2>
+                <p class="insight-card-text">
+                  Average net flow and positive-day rate across all available sessions.
+                </p>
+              </div>
+              <div
+                id="fiiDiiWeekdayChart"
+                class="insight-chart"
+                role="img"
+                aria-label="Weekday net flow analysis"
+              ></div>
+            </article>
+
+            <article class="insight-card">
+              <div class="insight-card-copy">
+                <p class="insight-card-eyebrow">Weekly Tendency</p>
+                <h2 id="fiiDiiWeeklyForecastTitle" class="insight-card-title">
+                  Historical buy-probability by weekday
+                </h2>
+                <p id="fiiDiiWeeklyForecastCopy" class="insight-card-text">
+                  Current or next trading week tendency, based on the selected historical slice.
+                </p>
+              </div>
+              <div
+                id="fiiDiiWeeklyForecastChart"
+                class="insight-chart"
+                role="img"
+                aria-label="Weekly historical tendency forecast"
+              ></div>
+            </article>
+
+            <article class="insight-card insight-card--wide">
+              <div class="insight-card-copy">
+                <p class="insight-card-eyebrow">Month Heatmap</p>
+                <h2 class="insight-card-title">Seasonality by calendar month</h2>
+                <p class="insight-card-text">
+                  Heatmap of average FII, DII, combined net, and positive-day rate.
+                </p>
+              </div>
+              <div
+                id="fiiDiiMonthHeatmap"
+                class="insight-chart"
+                role="img"
+                aria-label="Monthly seasonality heatmap"
+              ></div>
+            </article>
+          </div>
+        </section>
+
+        <section
+          id="marketSentimentShell"
+          class="analytics-shell analytics-dashboard-shell market-sentiment-shell is-hidden-view"
+          aria-label="Market sentiment dashboard"
+        >
+          <div class="market-sentiment-header">
+            <div class="market-sentiment-copy">
+              <p class="insight-card-eyebrow">Global Pulse</p>
+              <h2 class="market-sentiment-title">Market Sentiment</h2>
+              <p id="marketSentimentStatus" class="market-sentiment-status">
+                Select the dashboard to load live market data.
+              </p>
+            </div>
+          </div>
+
+          <div id="marketSentimentEmptyState" class="empty-state analytics-empty-state" hidden>
+            <p class="empty-title">Market data is unavailable</p>
+            <p class="empty-copy">
+              Yahoo Finance data could not be loaded right now. Try again in a moment.
+            </p>
+          </div>
+
+          <div class="market-sentiment-sections">
+            <section class="market-sentiment-section" aria-labelledby="marketSentimentSectionTitle">
+              <div class="market-sentiment-section-head">
+                <p class="insight-card-eyebrow">Section 1</p>
+                <h3 id="marketSentimentSectionTitle" class="market-sentiment-section-title">
+                  Symbols and Market Sentiments
+                </h3>
+              </div>
+
+              <div id="marketSentimentSummary" class="market-sentiment-summary" aria-live="polite"></div>
+              <div id="marketSentimentTiles" class="market-sentiment-grid" aria-live="polite"></div>
+            </section>
+
+            <section class="market-sentiment-section" aria-labelledby="marketSentimentLinksTitle">
+              <div class="market-sentiment-section-head">
+                <p class="insight-card-eyebrow">Section 2</p>
+                <h3 id="marketSentimentLinksTitle" class="market-sentiment-section-title">Links</h3>
+              </div>
+
+              <div id="marketSentimentLinks" class="market-sentiment-links" aria-live="polite"></div>
+            </section>
           </div>
         </section>
       </main>

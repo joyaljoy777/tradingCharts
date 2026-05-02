@@ -1,80 +1,256 @@
 # Trading Chart Calendar
 
-A fully static calendar viewer for trading chart screenshots, event/news annotations, and holidays.
+This repository is a fully static trading dashboard site hosted on GitHub Pages.
 
-The app is designed primarily for GitHub Pages. You add screenshots and JSON data under `charts/`, push, refresh, and the site should reflect the changes without app-code edits.
+It started as a calendar viewer for chart screenshots and now includes three different symbol-driven view types inside the same single-page app:
+
+- calendar views for screenshot-based symbols like `NIFTY50`, `BANKNIFTY`, and `P_AND_L_AND_LEARNINGS`
+- the `FII_DII` analytics chart view
+- the `FII_DII_ANALYTICS` dashboard view
+- the `MARKET_SENTIMENT` dashboard view
+
+Future AI sessions should treat this README as the primary orientation document for the project.
 
 ## Stack
 
 - HTML
 - CSS
 - Vanilla JavaScript
-- GitHub Pages / Jekyll-compatible static hosting
+- Static JSON / generated JS fallback data
+- GitHub Pages
+- GitHub Actions for Pages deployment and Market Sentiment snapshot refresh
 
-## What the app does
+## High-level architecture
 
-- Shows screenshots in a monthly Sunday-first calendar
-- Supports multiple symbols, currently including `NIFTY50`, `BANKNIFTY`, and `P_AND_L_AND_LEARNINGS`
-- Opens a larger modal/lightbox when a chart thumbnail is clicked
-- Uses a large image viewer with previous/next navigation across actual chart days only
-- Shows subtle blue and yellow event markers on the day tiles
-- Shows red/green P&L markers on the day tiles when monthly `pnl.json` data exists
-- Opens an event popup for past or future items
-- Opens a P&L popup for day P&L markers
-- Shows centered holiday labels on empty holiday dates
-- Shows a monthly P&L summary inside the last Saturday tile of the month
-- Works on desktop and mobile
+The app is a **single-page application without a framework**.
 
-## Current UI behavior
+There is only one HTML page:
 
-- Default symbol: `NIFTY50`
-- Default month: current month
-- Blue marker: past events/news
-- Yellow marker: future events/news
-- Green marker: day profit from `pnl.json`
-- Red marker: day loss from `pnl.json`
-- Event popup shows:
-  - impact and certainty bars
-  - event status circles
-  - sentiment emojis
-  - hover text for the visual values
-- Holiday text is shown only when the day has no chart thumbnail
-- If a day has both a chart and an event, the event marker is shown in the top row beside the date
-- If a day has both a chart and day P&L, the red/green P&L bar is shown in the top row beside the date
-- The monthly P&L summary is shown on the last Saturday tile of the selected month
-- If the last Saturday also has a chart, the monthly summary is overlaid inside that chart tile
-- Clicking the monthly P&L summary opens a larger popup with the same Profit / Loss / Net breakdown
+- `index.html`
 
-## Current screenshot viewer behavior
+That page contains multiple view shells:
 
-- A date can have multiple screenshots
-- The tile uses the first image as the main thumbnail
-- The tile shows a numeric count badge when that date has multiple images
-- Opening a chart day shows the large image in a modal/lightbox
-- Left/right modal navigation still moves across chart days, not across sibling images of the same day
-- If that day has multiple images, small image tiles are shown at the bottom of the popup
-- Clicking those bottom image tiles switches the large image for that same date
-- The image popup keeps a large image area and bottom controls inside the same window without page scrolling
-- `+` and `-` buttons zoom the image
-- When zoomed in, the image can be dragged/panned inside the viewport
+- the main screenshot calendar
+- the FII/DII flow chart shell
+- the FII/DII insights dashboard shell
+- the Market Sentiment dashboard shell
 
-## Project files
+The runtime shows or hides those shells based on the selected symbol.
 
-- `index.html`: layout, controls, modal structure
-- `styles.css`: calendar, modal, event marker, holiday, and viewer styling
-- `script.js`: all runtime logic
-- `chart-index.json`: Jekyll/Liquid image manifest for hosted use
-- `event-data.js`: embedded data fallback, mainly for `file://`
+Core idea:
+
+- the **symbol dropdown is the main navigation**
+- different symbols can represent either:
+  - a normal calendar symbol
+  - a non-calendar analytics/dashboard symbol
+
+## Current symbols
+
+### Calendar symbols
+
+- `NIFTY50`
+- `BANKNIFTY`
+- `P_AND_L_AND_LEARNINGS`
+
+These render the month calendar and load screenshots, events, holidays, and monthly P&L data.
+
+### Non-calendar symbols
+
+- `FII_DII`
+- `FII_DII_ANALYTICS`
+- `MARKET_SENTIMENT`
+
+These hide the calendar and show a dedicated full-width analytics/dashboard view instead.
+
+## Navigation and routing model
+
+There is **no URL router**.
+
+Navigation flow is:
+
+1. user changes the symbol dropdown
+2. `script.js` updates central state
+3. `script.js` decides whether the selected symbol is:
+   - a calendar symbol
+   - a non-calendar symbol
+4. the correct shell is shown
+5. feature-specific scripts listen for the selection-change event and render their own view
+
+Important implementation details:
+
+- main selection event: `trading-chart-selection-change`
+- `script.js` owns the shared app state for selected symbol and month
+- month navigation is disabled for non-calendar symbols
+
+## Main files
+
+### App shell and shared runtime
+
+- `index.html`: all shared controls, all view shells, lightbox markup
+- `styles.css`: global theme, calendar styles, analytics styles, Market Sentiment styles
+- `script.js`: main SPA controller, symbol dropdown population, month navigation, calendar rendering, modal/lightbox behavior, event/holiday/P&L loading
+
+### Calendar support
+
+- `chart-index.json`: generated image manifest used on hosted/static environments
+- `event-data.js`: embedded event/holiday/P&L fallback for `file://`
 - `schemas/eventsAndNewsSchema.json`: event/news schema reference
+
+### FII / DII views
+
+- `fii-dii-chart.js`: flow chart runtime for `FII_DII`
+- `fii-dii-insights.js`: analytics dashboard runtime for `FII_DII_ANALYTICS`
+- `fii-dii-data.js`: embedded fallback for `file://`
+
+### Market Sentiment view
+
+- `market-sentiment.js`: Market Sentiment dashboard runtime
+- `data/market-sentiment.json`: local/deployed Market Sentiment snapshot used by the frontend
+- `scripts/build-market-sentiment-data.js`: fetches Yahoo Finance data and rebuilds `data/market-sentiment.json`
+
+### Utility scripts
+
+- `scripts/build-chart-index.js`: rebuilds `chart-index.json`
 - `scripts/build-event-data.js`: rebuilds `event-data.js`
-- `scripts/serve-local.js`: tiny local static server for local testing
-- `charts/`: screenshots + data
+- `scripts/build-fii-dii-data.js`: rebuilds `fii-dii-data.js`
+- `scripts/build-market-sentiment-data.js`: refreshes Market Sentiment JSON snapshot
+- `scripts/prepare-commit.js`: runs all `build-*.js` generators and core syntax checks
+- `scripts/serve-local.js`: local static server for realistic testing
 
-## Data model
+## Project structure
 
-The app reads everything from `charts/`.
+```text
+.
+├── index.html
+├── styles.css
+├── script.js
+├── market-sentiment.js
+├── fii-dii-chart.js
+├── fii-dii-insights.js
+├── chart-index.json
+├── event-data.js
+├── fii-dii-data.js
+├── data/
+│   └── market-sentiment.json
+├── charts/
+│   ├── NIFTY50/
+│   ├── BANKNIFTY/
+│   ├── P_AND_L_AND_LEARNINGS/
+│   └── FII_DII/
+├── scripts/
+│   ├── build-chart-index.js
+│   ├── build-event-data.js
+│   ├── build-fii-dii-data.js
+│   ├── build-market-sentiment-data.js
+│   ├── prepare-commit.js
+│   └── serve-local.js
+└── .github/
+    └── workflows/
+        └── pages.yml
+```
 
-### Screenshot folders
+## Styling system
+
+The site uses a **single global stylesheet** with CSS custom properties at the top of `styles.css`.
+
+Theme characteristics:
+
+- dark UI
+- warm gold accent
+- soft borders
+- glassy/panel surfaces
+- compact spacing
+- all major views share the same panel language
+
+Key style patterns:
+
+- shell containers use rounded bordered panels
+- labels use uppercase compact eyebrow text
+- cards use subtle gradient surfaces
+- hover states brighten borders instead of radically changing layouts
+
+Important for future edits:
+
+- do not redesign the UI from scratch
+- preserve the dark neutral theme and gold accent
+- prefer reusing the existing panel/card vocabulary
+- new views should look like they belong beside the existing calendar and analytics views
+
+## Naming conventions
+
+### Symbols
+
+- symbol IDs are uppercase underscore-separated strings in the main app state
+- examples:
+  - `NIFTY50`
+  - `BANKNIFTY`
+  - `P_AND_L_AND_LEARNINGS`
+  - `FII_DII`
+  - `FII_DII_ANALYTICS`
+  - `MARKET_SENTIMENT`
+
+### Runtime JS
+
+- plain functions
+- mostly `var`, not `const`/`let`, in browser runtime files
+- IIFE wrappers around major runtime modules
+- DOM is built manually with `document.createElement`
+- helper functions are preferred over inline logic
+
+### Generated/build scripts
+
+- Node scripts use `const`
+- generator scripts follow the `build-*.js` naming pattern
+- `scripts/prepare-commit.js` auto-discovers that pattern
+
+## Shared JS patterns
+
+Common runtime patterns used throughout the project:
+
+- central app state in `script.js`
+- hidden/show view shells by toggling `.is-hidden-view`
+- render by replacing DOM nodes instead of diffing
+- fallback-friendly fetch helpers
+- normalize external data before rendering
+- use browser `CustomEvent` to notify view-specific modules of selection changes
+
+Important example:
+
+- `script.js` dispatches `trading-chart-selection-change`
+- feature modules listen for it and render only when their symbol is active
+
+## Calendar view behavior
+
+The calendar is the default view for calendar symbols.
+
+It supports:
+
+- screenshot thumbnails
+- same-day multiple screenshots
+- image count badges
+- image lightbox
+- left/right navigation across chart days
+- zoom in/out
+- drag-to-pan when zoomed
+- event markers
+- holiday labels
+- daily P&L markers
+- monthly P&L summary on the last Saturday tile
+
+### Screenshot naming rules
+
+Accepted screenshot filename formats:
+
+- `DD-MM-YYYY.png`
+- `DD-MM-YYYY.jpg`
+- `DD-MM-YYYY.jpeg`
+- `YYYY-MM-DD.png`
+- `YYYY-MM-DD.jpg`
+- `YYYY-MM-DD.jpeg`
+
+The date in the filename is the true source of truth, not the folder name.
+
+### Screenshot folder shape
 
 Recommended:
 
@@ -82,7 +258,7 @@ Recommended:
 charts/
   SYMBOL/
     YEAR/
-      MONTH/
+      monthname/
         DD-MM-YYYY.png
 ```
 
@@ -90,23 +266,33 @@ Examples:
 
 ```text
 charts/NIFTY50/2026/april/24-04-2026.png
-charts/BANKNIFTY/2027/january/01-01-2027.png
+charts/BANKNIFTY/2026/May/4-05-2026.jpeg
 ```
 
-Also supported:
+Also tolerated:
 
 ```text
 charts/
   SYMBOL/
-    MONTH/
+    monthname/
       DD-MM-YYYY.png
 ```
 
-### Event and holiday JSON folders
+### Dynamic screenshot discovery
 
-Both symbol-level and year-level JSON are supported.
+Hosted/static environments use `chart-index.json`.
 
-Supported:
+That file is built by:
+
+```bash
+node scripts/build-chart-index.js
+```
+
+Direct `file://` mode uses image probing as a fallback.
+
+## Events, holidays, and P&L
+
+### Supported files
 
 ```text
 charts/SYMBOL/pastEventsAndNews.json
@@ -116,229 +302,269 @@ charts/SYMBOL/holiday.json
 charts/SYMBOL/YEAR/pastEventsAndNews.json
 charts/SYMBOL/YEAR/futureEventsAndNews.json
 charts/SYMBOL/YEAR/holiday.json
+
+charts/SYMBOL/YEAR/monthname/pnl.json
 ```
 
-At runtime, the app merges what exists for the selected `symbol + year`.
+### Rules
 
-That means:
+- symbol directory decides ownership
+- JSON `date` field decides target day
+- month folder matters for `pnl.json` loading
+- P&L summary is shown on the last Saturday of the selected month, not the trade date itself
 
-- symbol-level JSON can hold shared/default data for that symbol
-- year-level JSON can hold year-specific data
-- for a selected symbol/year, both sources are considered if both exist
-
-### P&L JSON folders
-
-P&L is month-specific.
-
-Supported:
-
-```text
-charts/SYMBOL/YEAR/MONTH/pnl.json
-```
-
-Examples:
-
-```text
-charts/P_AND_L_AND_LEARNINGS/2026/march/pnl.json
-charts/P_AND_L_AND_LEARNINGS/2026/april/pnl.json
-charts/P_AND_L_AND_LEARNINGS/2026/may/pnl.json
-```
-
-Current runtime expectation:
-
-- one `pnl.json` per month folder
-- the month folder name should match the selected month name, for example `march`, `april`, `may`
-- the app loads the month file for the currently selected `symbol + yearMonth`
-- no app-code change is needed when adding a new month on GitHub Pages or the local server
-
-Recommended P&L JSON shape:
-
-```json
-[
-  {
-    "date": "03-08-2026",
-    "profit": 35000.0,
-    "loss": 0
-  },
-  {
-    "date": "04-08-2026",
-    "profit": 0,
-    "loss": 12500.0
-  }
-]
-```
-
-Practical meaning:
-
-- `profit > 0` means that day gets a green P&L marker
-- `loss > 0` means that day gets a red P&L marker
-- if both are `0`, the runtime ignores that day for marker purposes
-- for the current implementation, one entry per date is the intended shape
-
-## Source-of-truth date rules
-
-These rules are important.
-
-### Screenshots
-
-The screenshot filename date is authoritative, not the parent folder name.
-
-Valid screenshot names:
-
-- `DD-MM-YYYY.png`
-- `DD-MM-YYYY.jpg`
-- `DD-MM-YYYY.jpeg`
-- `YYYY-MM-DD.png`
-- `YYYY-MM-DD.jpg`
-- `YYYY-MM-DD.jpeg`
-
-Example:
-
-- `charts/NIFTY50/2027/January/1-01-2026.png` will be treated as **January 1, 2026**, even if it lives inside a `2027` folder.
-
-### Event/news JSON
-
-The `date` field is authoritative.
-
-Accepted format:
+### Accepted `date` format
 
 - `DD-MM-YYYY`
-- single-digit day/month values are also tolerated by the runtime parser, for example `1-01-2027`
+- single-digit day/month values are tolerated by runtime parsing
 
-### Holiday JSON
+### P&L runtime behavior
 
-The `date` field is authoritative.
+- green bar: profit day
+- red bar: loss day
+- clicking the day bar opens a popup
+- month totals are computed client-side from the loaded month `pnl.json`
+- monthly summary popup shows `Profit`, `Loss`, and `Net`
 
-Accepted format:
+## FII / DII flow chart
 
-- `DD-MM-YYYY`
-- single-digit day/month values are also tolerated by the runtime parser
+Symbol:
 
-### P&L JSON
+- `FII_DII`
 
-The `date` field is authoritative.
+This is not a calendar view. It opens a dedicated analytics shell.
 
-Accepted format:
+Current features:
 
-- `DD-MM-YYYY`
-- single-digit day/month values are also tolerated by the runtime parser
+- `From` / `To` month range filters
+- `Paired` mode
+- `Net` mode
+- chart-style switch
+- multiple moving averages
+- moving-average manager when overlay count grows
+- forecast extensions for moving averages
 
-Important implementation detail:
+Data source:
 
-- the `date` inside `pnl.json` decides which calendar day gets the red/green day marker
-- the month folder still matters because the runtime fetches `pnl.json` from the selected month folder
-- the monthly summary is not shown on the entry date; it is shown on the last Saturday tile of that month
+- yearly JSON files under `charts/FII_DII/YYYY.json`
 
-## P&L behavior
+Runtime fields currently used from each row:
 
-This section is important for future AI sessions.
+- `created_at`
+- `fii_net_value`
+- `dii_net_value`
+- `last_trade_price`
 
-### Day markers
+Fallback for `file://` only:
 
-- A green bar means the day P&L is profit
-- A red bar means the day P&L is loss
-- The bar is shown in the top row of the day tile, on the same row as the date number
-- The bar is shorter than the full tile width and visually centered
-- Clicking the day P&L bar opens a popup with the exact value
+- `fii-dii-data.js`
 
-### Monthly summary tile
+## FII / DII analytics dashboard
 
-- The app computes:
-  - total profit for the month
-  - total loss for the month
-  - net profit/loss for the month
-- The summary is rendered in the last available Saturday tile of the selected month
-- The tile background is lightly tinted:
-  - light green if monthly net is positive
-  - light red if monthly net is negative
-- The summary text itself shows:
-  - `Profit`
-  - `Loss`
-  - `Net`
-- The net line color follows the monthly net result
-- Clicking the monthly summary opens a larger popup with the same data
+Symbol:
 
-### Important monthly-summary rule
+- `FII_DII_ANALYTICS`
 
-The summary tile is based on the month being viewed, not the trade date itself.
+This is also a non-calendar dashboard view.
 
-Example:
+Current features:
 
-- a July entry with date `03-07-2026` still contributes to the July monthly summary
-- the July monthly summary appears on the last Saturday of July 2026, not on July 3
-- if the last Saturday already contains a chart image, the summary is overlaid inside that chart tile
+- `From` / `To` month filters
+- optional calendar-month filter across years
+- KPI cards
+- weekday pattern chart
+- weekly tendency chart
+- full-width heatmap
 
-## Event/news schema
+Important note:
 
-Schema file:
+- all summary logic is computed in-browser
+- there is no precomputed analytics JSON
 
-- `schemas/eventsAndNewsSchema.json`
+## Market Sentiment dashboard
 
-The app currently uses these practical fields:
+Symbol:
 
-- `date`
-- `event_type` or `type`
-- `content`
-- `impact`
-- `event_status`
-- `certainty`
-- `affected_indices`
-- `sentiment`
-- `notes`
+- `MARKET_SENTIMENT`
+
+This is a non-calendar dashboard view.
+
+### Current UI behavior
+
+- top header/status block
+- summary KPI cards
+- compact symbol sentiment tiles
+- links section
+- no duplicate summary table
+- optimized desktop layout to reduce page scrolling
+
+### Current tracked instruments
+
+- `GIFT NIFTY(NIFTY NSE)` using Yahoo symbol `^NSEI`
+- `S&P 500`
+- `Nasdaq Composite`
+- `Nikkei 225`
+- `Hang Seng`
+- `Crude Oil (WTI)`
+
+### Sentiment logic
+
+- `pct > 0.5` -> `Strong Bullish`
+- `0 < pct <= 0.5` -> `Mild Bullish`
+- `-0.5 <= pct < 0` -> `Mild Bearish`
+- `pct < -0.5` -> `Strong Bearish`
+- effectively zero -> `Neutral`
+
+### Data source strategy
+
+The browser does **not** fetch Yahoo directly anymore as the primary path.
+
+Primary runtime source:
+
+- `data/market-sentiment.json`
+
+That JSON is refreshed by GitHub Actions using:
+
+- `scripts/build-market-sentiment-data.js`
+
+### Embedded fallback behavior
+
+`market-sentiment.js` includes an embedded manual seed snapshot.
+
+This exists so the dashboard can still render useful values when:
+
+- the deployed JSON is missing
+- the JSON fetch fails
+- the JSON fetch returns no usable rows
+- the user is still on an older deployment
+
+The Market Sentiment runtime fallback order is:
+
+1. try `data/market-sentiment.json`
+2. if fetch fails or data is unusable, use the embedded fallback snapshot
+
+### Generated JSON shape
+
+`data/market-sentiment.json` currently stores:
+
+- `generatedAt`
 - `source`
+- `successCount`
+- `staleCount`
+- `errorMessage`
+- `records`
 
-Important implementation note:
+Each record includes:
 
-- `affected_indices` is display metadata in the popup
-- it does **not** decide which symbol the record belongs to
-- the symbol directory the JSON came from is what decides which symbol sees the data
+- `key`
+- `label`
+- `quoteUrl`
+- `chartUrl`
+- `current`
+- `previousClose`
+- `change`
+- `pct`
+- `sentiment`
+- `trendGroup`
+- `arrow`
+- `isAvailable`
+- `isStale`
+- `fetchedAt`
+- `errorMessage`
 
-So:
+### Important Yahoo parsing note
 
-- data inside `charts/NIFTY50/...` is shown for `NIFTY50`
-- data inside `charts/BANKNIFTY/...` is shown for `BANKNIFTY`
+The Market Sentiment build script must handle both:
 
-## Hosting behavior
+- `meta.previousClose`
+- `meta.chartPreviousClose`
+
+Yahoo responses seen in this project used `chartPreviousClose`, so the script was updated to fall back to that field.
+
+## Hosting and deployment
 
 ### GitHub Pages
 
-GitHub Pages is the intended environment.
+This project is intended to be deployed with **GitHub Actions Pages deployment**, not branch-based Pages publishing.
 
-Image loading:
+Current workflow file:
 
-- the app uses `chart-index.json`
-- `chart-index.json` is generated by Jekyll/Liquid from the `charts/` folder
+- `.github/workflows/pages.yml`
 
-Event/news/holiday loading:
+Current default branch:
 
-- the app prefers live JSON files from `charts/...`
-- `event-data.js` is also applied as an immediate baseline/fallback
-- once live JSON loads, the selected symbol-year data is replaced with the current JSON contents for that year
+- `master`
 
-This setup is meant to allow:
+### Pages deployment model
 
-1. add or edit screenshots / JSON
-2. push to GitHub
-3. refresh the site
+The workflow:
 
-For P&L month files specifically:
+1. checks out `master`
+2. runs `node scripts/build-market-sentiment-data.js`
+3. uploads the whole repo as a Pages artifact
+4. deploys that artifact using `actions/deploy-pages`
 
-- adding `charts/SYMBOL/YEAR/june/pnl.json` or `charts/SYMBOL/YEAR/july/pnl.json` should work with no code changes
-- adding a new month image folder also works with no code changes
-- this is the preferred fully dynamic environment
+This avoids commit spam from scheduled Market Sentiment refreshes.
 
-### Local `file://`
+### Current scheduled Market Sentiment refresh window
 
-Direct disk opening still works, but with limits:
+Target requirement:
 
-- screenshot probing works
-- live JSON fetching is limited by the browser on `file://`
-- `event-data.js` exists mainly to support this mode
-- local `fetch()` of new month `pnl.json` files does **not** work reliably on `file://`
-- `event-data.js` is a snapshot, so new month P&L JSON added after the snapshot will not appear until the snapshot is rebuilt
-- this is a browser security limitation, not an app logic preference
+- weekdays only
+- every 5 minutes
+- from `09:00 AM IST` through `09:30 AM IST`
 
-If you want local behavior closer to GitHub Pages, run:
+UTC conversion used in the workflow:
+
+```yaml
+on:
+  schedule:
+    - cron: "30,35,40,45,50,55 3 * * 1-5"
+    - cron: "0 4 * * 1-5"
+```
+
+That means:
+
+- `03:30 UTC`
+- `03:35 UTC`
+- `03:40 UTC`
+- `03:45 UTC`
+- `03:50 UTC`
+- `03:55 UTC`
+- `04:00 UTC`
+
+which equals:
+
+- `09:00 IST`
+- `09:05 IST`
+- `09:10 IST`
+- `09:15 IST`
+- `09:20 IST`
+- `09:25 IST`
+- `09:30 IST`
+
+### Reliability note about Yahoo
+
+The GitHub Actions Market Sentiment flow is more reliable than browser-side Yahoo `fetch()`, but it is **not guaranteed**.
+
+Possible failure reasons:
+
+- Yahoo rate-limits or blocks the runner
+- network failures
+- temporary bad payloads
+
+Current mitigation:
+
+- retry logic in `scripts/build-market-sentiment-data.js`
+- spacing between requests
+- last-good snapshot preservation if a record already had good data
+- embedded manual seed fallback inside `market-sentiment.js`
+
+## Local development
+
+### Recommended local mode
+
+Use the local server:
 
 ```bash
 node scripts/serve-local.js
@@ -348,177 +574,174 @@ Then open:
 
 - `http://127.0.0.1:4173`
 
-### Local server
+This is the closest local behavior to hosted Pages.
 
-Using the included server is the recommended local dynamic workflow.
+### `file://` mode
 
-Behavior:
+Direct disk opening still works, but it is intentionally limited.
 
-- new screenshot folders are discovered dynamically
-- new monthly `pnl.json` files are loaded dynamically
-- no code changes are needed when adding future months like `june`, `july`, `august`
-- this is the closest local behavior to GitHub Pages
+Important limitations:
 
-## GitHub Pages setup
+- browser security limits live JSON loading
+- `event-data.js` and `fii-dii-data.js` exist mainly for fallback in this mode
+- Market Sentiment will use the embedded fallback if JSON fetches fail
 
-1. Push the project to GitHub
-2. Open repository `Settings`
-3. Open `Pages`
-4. Choose `Deploy from a branch`
-5. Select branch `main`
-6. Select folder `/ (root)`
-7. Save
-
-Important:
-
-- this project can run as plain static hosting (no Jekyll processing required)
-- `chart-index.json` is generated locally as plain JSON
-
-## Updating content later
+## Updating content
 
 ### Screenshots
 
-1. Add screenshots to the correct symbol/year/month folder
-2. Make sure the filename date is correct
-3. Rebuild chart index locally:
+1. add screenshot files under the correct symbol/year/month folder
+2. rebuild the chart index:
 
 ```bash
 node scripts/build-chart-index.js
 ```
 
-4. Commit and push both:
-- the updated `chart-index.json`
-- the new/changed screenshot files
-5. Refresh GitHub Pages
+3. commit and push the screenshots plus updated `chart-index.json`
 
-### Events and holidays
+### Events / holidays / P&L
 
-1. Add or edit:
-   - `pastEventsAndNews.json`
-   - `futureEventsAndNews.json`
-   - `holiday.json`
-2. Put them either at symbol level, year level, or both
-3. Make sure the `date` values are correct
-4. Push
-5. Refresh GitHub Pages
-
-For direct `file://` testing only, rebuild the embedded fallback after JSON changes:
+1. edit the JSON files under `charts/`
+2. push changes
+3. for `file://` fallback mode only, rebuild:
 
 ```bash
 node scripts/build-event-data.js
 ```
 
-### P&L
+### FII / DII yearly data
 
-1. Add or edit `pnl.json` inside the target month folder
-2. Use one object per date with `date`, `profit`, and `loss`
-3. Make sure the `date` values are correct
-4. Rebuild embedded fallback data locally:
-
-```bash
-node scripts/build-event-data.js
-```
-
-5. Commit and push both:
-- the updated `event-data.js`
-- the new/changed month `pnl.json` files
-6. Refresh GitHub Pages
-
-Examples:
-
-```text
-charts/P_AND_L_AND_LEARNINGS/2026/june/pnl.json
-charts/P_AND_L_AND_LEARNINGS/2026/july/pnl.json
-charts/P_AND_L_AND_LEARNINGS/2026/august/pnl.json
-```
-
-For direct `file://` testing only, rebuilding `event-data.js` is required after adding a new month or changing P&L JSON:
+1. edit the relevant `charts/FII_DII/YYYY.json`
+2. push changes
+3. for `file://` fallback mode only, rebuild:
 
 ```bash
-node scripts/build-event-data.js
+node scripts/build-fii-dii-data.js
 ```
 
-If you want new month folders to appear dynamically during local testing without rebuilding fallback data, use:
+### Market Sentiment manual refresh
+
+To rebuild the Market Sentiment snapshot locally:
 
 ```bash
-node scripts/serve-local.js
+node scripts/build-market-sentiment-data.js
 ```
 
-For fully static GitHub Pages updates after adding screenshots or JSON, run both generators before commit:
+That writes:
+
+- `data/market-sentiment.json`
+
+Note:
+
+- Yahoo may still block local refresh attempts depending on environment/IP
+
+## Pre-commit workflow
+
+Preferred command:
+
+```bash
+node scripts/prepare-commit.js
+```
+
+That script:
+
+- runs all `scripts/build-*.js` generators
+- runs core syntax checks
+
+Useful explicit commands:
 
 ```bash
 node scripts/build-chart-index.js
 node scripts/build-event-data.js
+node scripts/build-fii-dii-data.js
+node scripts/build-market-sentiment-data.js
+node --check script.js
+node --check fii-dii-chart.js
+node --check fii-dii-insights.js
+node --check market-sentiment.js
 ```
+
+## Adding a new symbol or view
+
+### Add a new calendar symbol
+
+Usually required:
+
+1. add the symbol ID to `DEFAULT_SYMBOLS` in `script.js`
+2. add screenshots and optional JSON under `charts/SYMBOL/...`
+3. rebuild `chart-index.json`
+
+### Add a new non-calendar dashboard symbol
+
+Usually required:
+
+1. add the symbol ID to `DEFAULT_SYMBOLS` in `script.js`
+2. if it should hide the calendar, include it in the non-calendar symbol logic
+3. add a new shell to `index.html`
+4. add runtime logic in a dedicated JS file
+5. add matching styles in `styles.css`
+6. if it has generated data, add a build script and deploy/runtime source
 
 ## Troubleshooting
 
 If something does not show, check these first:
 
-- The screenshot filename date is correct
-- The JSON `date` field is correct
-- The file is under the intended symbol directory
-- The file extension is `png`, `jpg`, or `jpeg`
-- The month you are viewing matches the date inside the filename/JSON
-- On GitHub Pages, hard refresh after pushing
-- Do not use `.nojekyll`
-- If the issue is with `pnl.json`, confirm the file lives inside the month folder, for example `charts/SYMBOL/2026/august/pnl.json`
-- If using `file://`, remember that new month P&L JSON needs a rebuilt `event-data.js`
-- If a monthly summary seems to be “missing”, check the last Saturday of the selected month
-- If a month summary is expected on the entry date itself, that is not the current rule
-- If a date has multiple screenshots, the date still has only one day-level P&L marker
+- symbol dropdown actually changed to the intended symbol
+- screenshot filename date is correct
+- JSON `date` field is correct
+- file is under the correct symbol directory
+- month being viewed matches the data you expect
+- `chart-index.json` was rebuilt after adding screenshots
+- hard refresh after a GitHub Pages deployment
+- local server is preferred over raw `file://`
 
-Examples of easy-to-miss mistakes:
+### Market Sentiment-specific checks
 
-- a screenshot inside `2027/` named `1-01-2026.png`
-- a holiday meant for January 26 entered as `1-01-2027`
-- adding data under `NIFTY50` and expecting it to appear under `BANKNIFTY`
-- expecting `july/pnl.json` to appear on raw `file://` without rebuilding `event-data.js`
-- expecting the monthly summary to appear on the trade date instead of the month’s last Saturday
-- visiting a month before adding its files, then testing again without refreshing the page/server
+- confirm `MARKET_SENTIMENT` is selected
+- confirm the deployed page includes the latest `market-sentiment.js`
+- confirm `data/market-sentiment.json` is being served by the deployment
+- if the JSON is stale/missing, the embedded fallback should still show usable values
+- if the UI still shows placeholder-only content, the deployed JS is probably older than the local workspace
 
-## Recent feature notes
+### FII / DII-specific checks
 
-These notes capture newer behavior that future AI sessions should understand quickly.
+- `FII_DII` and `FII_DII_ANALYTICS` both depend on yearly files under `charts/FII_DII/`
+- `file://` mode may require rebuilding `fii-dii-data.js`
 
-- `P_AND_L_AND_LEARNINGS` is a supported symbol
-- same-day multi-image screenshot groups are supported
-- same-day multi-image tiles show a count badge on the calendar tile
-- the image modal shows sibling image thumbnails for the same date
-- the image modal supports zoom in, zoom out, and drag-to-pan
-- monthly P&L summary tiles are clickable and open a larger popup
-- new month screenshot folders and `pnl.json` files are dynamically supported on GitHub Pages and the local server
-- raw `file://` is intentionally treated as a limited fallback mode
-- `event-data.js` is still needed only for `file://` fallback, not as the primary hosted source
+### Easy-to-miss mistakes
 
-## Developer notes
+- adding screenshots without rebuilding `chart-index.json`
+- expecting the folder year to override the filename date
+- adding data under one symbol and expecting it to appear under another
+- expecting the monthly P&L summary to appear on the trade date instead of the last Saturday
+- expecting branch-based GitHub Pages behavior while the project is configured for GitHub Actions Pages deployment
 
-- The app is fully static
-- No backend
-- No framework
-- No build pipeline is required for GitHub Pages runtime behavior
-- `event-data.js` is generated fallback data, not the primary hosted source
-- The runtime dedupes identical event items by signature
-- Live JSON loading now replaces the selected symbol-year data instead of only appending, so stale entries should not survive when the JSON changes
-- P&L data is month-level, not year-level
-- P&L file path pattern is `charts/SYMBOL/YEAR/monthname/pnl.json`
-- Monthly P&L totals are computed client-side from the loaded month JSON
-- The monthly summary target tile is the last Saturday of the currently selected month
-- The runtime was updated so “month not found” results are retried instead of being cached forever during the session
-- Browser `file://` restrictions are the main reason fully dynamic local JSON loading is not reliable without the local server
+## Developer notes for future AI sessions
 
-## Quick resume notes for a future session
+- This is a SPA with symbol-driven view switching, not multiple HTML pages.
+- The symbol dropdown is the main router.
+- `script.js` is the central controller and owns visibility of calendar vs non-calendar views.
+- `FII_DII`, `FII_DII_ANALYTICS`, and `MARKET_SENTIMENT` are non-calendar symbols.
+- `market-sentiment.js` now contains an embedded fallback snapshot on purpose.
+- `data/market-sentiment.json` is the primary Market Sentiment runtime source on hosted/static environments.
+- `.github/workflows/pages.yml` deploys the full site from `master` using GitHub Actions artifacts.
+- The Pages deployment is intentionally no-commit for scheduled data refreshes.
+- Yahoo parsing must tolerate `chartPreviousClose`.
+- New visual work should preserve the existing dark/gold panel language instead of redesigning the app.
 
-- Main runtime file: `script.js`
-- Main style file: `styles.css`
+## Quick resume notes
+
+- Main runtime: `script.js`
+- Main styles: `styles.css`
+- App shell: `index.html`
+- FII/DII flow view: `fii-dii-chart.js`
+- FII/DII analytics view: `fii-dii-insights.js`
+- Market Sentiment view: `market-sentiment.js`
 - Image manifest: `chart-index.json`
-- Embedded fallback data: `event-data.js`
-- Rebuild fallback data: `node scripts/build-event-data.js`
+- Event fallback: `event-data.js`
+- FII/DII fallback: `fii-dii-data.js`
+- Market Sentiment runtime JSON: `data/market-sentiment.json`
+- Market Sentiment builder: `scripts/build-market-sentiment-data.js`
+- Pages workflow: `.github/workflows/pages.yml`
+- Pre-commit prep: `node scripts/prepare-commit.js`
 - Local server: `node scripts/serve-local.js`
-- Date in filename / JSON is the real source of truth
-- Symbol directory decides ownership of event/news/holiday data
-- P&L month file path: `charts/SYMBOL/YEAR/monthname/pnl.json`
-- Red/green day bars come from `pnl.json`
-- Monthly Profit / Loss / Net summary appears on the last Saturday tile
-- GitHub Pages and the local server are the true dynamic modes
-- `file://` is fallback-only for new JSON data
