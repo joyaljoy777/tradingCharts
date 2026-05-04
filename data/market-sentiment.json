@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-04T10:57:52.761Z",
+  "generatedAt": "2026-05-04T11:27:39.162Z",
   "source": "yahoo-finance-chart",
   "successCount": 6,
   "staleCount": 0,
@@ -19,7 +19,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-04T10:57:52.761Z",
+      "fetchedAt": "2026-05-04T11:27:39.162Z",
       "errorMessage": ""
     },
     {
@@ -36,7 +36,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-04T10:57:52.761Z",
+      "fetchedAt": "2026-05-04T11:27:39.162Z",
       "errorMessage": ""
     },
     {
@@ -53,7 +53,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-04T10:57:52.761Z",
+      "fetchedAt": "2026-05-04T11:27:39.162Z",
       "errorMessage": ""
     },
     {
@@ -70,7 +70,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-04T10:57:52.761Z",
+      "fetchedAt": "2026-05-04T11:27:39.162Z",
       "errorMessage": ""
     },
     {
@@ -87,7 +87,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-04T10:57:52.761Z",
+      "fetchedAt": "2026-05-04T11:27:39.162Z",
       "errorMessage": ""
     },
     {
@@ -95,16 +95,16 @@
       "label": "Crude Oil (WTI)",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/commodities/crude-oil-streaming-chart",
-      "current": 104.96,
+      "current": 105.21,
       "previousClose": 101.94,
-      "change": 3.019999999999996,
-      "pct": 2.9625269766529296,
+      "change": 3.269999999999996,
+      "pct": 3.2077692760447287,
       "sentiment": "Strong Bullish",
       "trendGroup": "bullish",
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-04T10:57:52.761Z",
+      "fetchedAt": "2026-05-04T11:27:39.162Z",
       "errorMessage": ""
     }
   ]
