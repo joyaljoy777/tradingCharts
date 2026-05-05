@@ -1549,6 +1549,16 @@ window.TRADING_CHART_EMBEDDED_DATA = {
               "date": "30-03-2026",
               "profit": 0,
               "loss": 293494.5
+            },
+            {
+              "date": "04-05-2026",
+              "profit": 0,
+              "loss": 102225.25
+            },
+            {
+              "date": "05-05-2026",
+              "profit": 0,
+              "loss": 10933
             }
           ],
           "holiday": [

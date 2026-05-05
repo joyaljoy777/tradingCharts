@@ -1127,6 +1127,19 @@
         "last_trade_price": 24119.30,
         "change_value": 121.75,
         "change_per": 0.51
+      },
+      {
+        "created_at": "2026-05-05T00:00:00",
+        "fii_buy_value": 10392.91,
+        "fii_sell_value": 14014.49,
+        "fii_net_value": -3621.58,
+        "dii_buy_value": 16234.31,
+        "dii_sell_value": 13631.69,
+        "dii_net_value": 2602.62,
+        "symbol_name": "NIFTY 50",
+        "last_trade_price": 24032.80,
+        "change_value": -86.50,
+        "change_per": -0.36
       }
     ]
   }
