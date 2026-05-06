@@ -1553,17 +1553,26 @@ window.TRADING_CHART_EMBEDDED_DATA = {
             {
               "date": "04-05-2026",
               "profit": 0,
-              "loss": 102225.25
+              "loss": 102225.25,
+              "brokerage_and_net_charges": 2413.76,
+              "total_traded_value": 1402732.5,
+              "total_trades_took": 5
             },
             {
               "date": "05-05-2026",
               "profit": 0,
-              "loss": 10933
+              "loss": 10933,
+              "brokerage_and_net_charges": 449.42,
+              "total_traded_value": 186519.45,
+              "total_trades_took": 1
             },
             {
               "date": "06-05-2026",
               "profit": 39841.75,
-              "loss": 0
+              "loss": 0,
+              "brokerage_and_net_charges": 1552.86,
+              "total_traded_value": 986742.25,
+              "total_trades_took": 3
             }
           ],
           "holiday": [
