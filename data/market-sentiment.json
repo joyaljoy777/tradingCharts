@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-07T15:34:38.840Z",
+  "generatedAt": "2026-05-07T18:06:53.037Z",
   "source": "yahoo-finance-chart",
   "successCount": 6,
   "staleCount": 0,
@@ -19,7 +19,7 @@
       "arrow": "↓",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T15:34:38.840Z",
+      "fetchedAt": "2026-05-07T18:06:53.037Z",
       "errorMessage": ""
     },
     {
@@ -27,16 +27,16 @@
       "label": "S&P 500",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/indices/us-spx-500-chart",
-      "current": 7379.75,
+      "current": 7341.67,
       "previousClose": 7365.12,
-      "change": 14.63000000000011,
-      "pct": 0.1986389902676414,
-      "sentiment": "Mild Bullish",
-      "trendGroup": "bullish",
-      "arrow": "↑",
+      "change": -23.449999999999818,
+      "pct": -0.3183926399026739,
+      "sentiment": "Mild Bearish",
+      "trendGroup": "bearish",
+      "arrow": "↓",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T15:34:38.840Z",
+      "fetchedAt": "2026-05-07T18:06:53.037Z",
       "errorMessage": ""
     },
     {
@@ -44,16 +44,16 @@
       "label": "Nasdaq Composite",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/%5EIXIC?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/indices/nasdaq-composite-chart",
-      "current": 25986.848,
+      "current": 25837.393,
       "previousClose": 25838.943,
-      "change": 147.90500000000247,
-      "pct": 0.5724111857052453,
-      "sentiment": "Strong Bullish",
-      "trendGroup": "bullish",
-      "arrow": "↑",
+      "change": -1.5499999999992724,
+      "pct": -0.005998697392533713,
+      "sentiment": "Mild Bearish",
+      "trendGroup": "bearish",
+      "arrow": "↓",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T15:34:38.840Z",
+      "fetchedAt": "2026-05-07T18:06:53.037Z",
       "errorMessage": ""
     },
     {
@@ -70,7 +70,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T15:34:38.840Z",
+      "fetchedAt": "2026-05-07T18:06:53.037Z",
       "errorMessage": ""
     },
     {
@@ -87,7 +87,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T15:34:38.840Z",
+      "fetchedAt": "2026-05-07T18:06:53.037Z",
       "errorMessage": ""
     },
     {
@@ -95,16 +95,16 @@
       "label": "Crude Oil (WTI)",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/commodities/crude-oil-streaming-chart",
-      "current": 92.38,
+      "current": 95.1,
       "previousClose": 95.08,
-      "change": -2.700000000000003,
-      "pct": -2.8397139251156953,
-      "sentiment": "Strong Bearish",
-      "trendGroup": "bearish",
-      "arrow": "↓",
+      "change": 0.01999999999999602,
+      "pct": 0.021034917963815757,
+      "sentiment": "Mild Bullish",
+      "trendGroup": "bullish",
+      "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T15:34:38.840Z",
+      "fetchedAt": "2026-05-07T18:06:53.037Z",
       "errorMessage": ""
     }
   ]
