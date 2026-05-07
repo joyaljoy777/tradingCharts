@@ -92,6 +92,9 @@
   {
     "date": "30-04-2026",
     "profit": 21700.25,
-    "loss": 0
+    "loss": 0,
+    "brokerage_and_net_charges": 21543.96,
+    "total_traded_value": 0,
+    "total_trades_took": 3
   }
 ]

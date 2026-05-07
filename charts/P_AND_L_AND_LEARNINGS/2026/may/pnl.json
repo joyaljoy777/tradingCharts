@@ -22,5 +22,13 @@
     "brokerage_and_net_charges": 1552.86,
     "total_traded_value": 986742.25,
     "total_trades_took": 3
+  },
+  {
+    "date": "07-05-2026",
+    "profit": 86453.25,
+    "loss": 0,
+    "brokerage_and_net_charges": 0,
+    "total_traded_value": 0,
+    "total_trades_took": 3
   }
 ]

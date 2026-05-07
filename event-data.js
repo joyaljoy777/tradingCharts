@@ -1473,7 +1473,10 @@ window.TRADING_CHART_EMBEDDED_DATA = {
             {
               "date": "30-04-2026",
               "profit": 21700.25,
-              "loss": 0
+              "loss": 0,
+              "brokerage_and_net_charges": 21543.96,
+              "total_traded_value": 0,
+              "total_trades_took": 3
             },
             {
               "date": "02-03-2026",
@@ -1572,6 +1575,14 @@ window.TRADING_CHART_EMBEDDED_DATA = {
               "loss": 0,
               "brokerage_and_net_charges": 1552.86,
               "total_traded_value": 986742.25,
+              "total_trades_took": 3
+            },
+            {
+              "date": "07-05-2026",
+              "profit": 86453.25,
+              "loss": 0,
+              "brokerage_and_net_charges": 0,
+              "total_traded_value": 0,
               "total_trades_took": 3
             }
           ],
