@@ -322,8 +322,10 @@ charts/SYMBOL/YEAR/monthname/pnl.json
 
 - green bar: profit day
 - red bar: loss day
-- clicking the day bar opens a popup
+- clicking the day bar opens a popup with P&L plus optional brokerage, traded value, and trade count fields
 - month totals are computed client-side from the loaded month `pnl.json`
+- monthly net is `profit - loss - brokerage_and_net_charges` for all available brokerage entries
+- P&L money values default to compact Indian units (`K`, `L`, `Cr`) in popups and can be toggled to full values; the monthly summary tile always shows full values
 - monthly summary popup shows `Profit`, `Loss`, and `Net`
 
 ## FII / DII flow chart

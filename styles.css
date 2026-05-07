@@ -1469,6 +1469,7 @@ p {
   z-index: 3;
   pointer-events: auto;
   cursor: pointer;
+  overflow: hidden;
   transition:
     border-color var(--transition),
     background var(--transition),
@@ -1499,7 +1500,7 @@ p {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
   margin: 0;
 }
 
@@ -1526,6 +1527,10 @@ p {
   white-space: nowrap;
 }
 
+.monthly-pnl-summary--full .monthly-pnl-value {
+  font-size: clamp(0.42rem, 0.58vw, 0.58rem);
+}
+
 .monthly-pnl-value--profit {
   color: #6cf29a;
 }
@@ -1544,6 +1549,10 @@ p {
 
 .monthly-pnl-summary--flat .monthly-pnl-value--net {
   color: var(--text);
+}
+
+.monthly-pnl-value--muted {
+  color: var(--text-muted);
 }
 
 .lightbox[data-mode="pnl-summary"] .lightbox-dialog {
@@ -2007,16 +2016,54 @@ p {
 }
 
 .pnl-card {
+  position: relative;
   display: grid;
   gap: 10px;
-  width: min(100%, 360px);
-  padding: 20px;
+  width: min(100%, 420px);
+  padding: 28px 20px 20px;
   border-radius: 18px;
   border: 1px solid rgba(232, 224, 210, 0.12);
   text-align: center;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 38%),
     rgba(255, 255, 255, 0.025);
+}
+
+.pnl-display-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 24px;
+  border: 1px solid rgba(245, 240, 232, 0.16);
+  border-radius: 999px;
+  background: rgba(245, 240, 232, 0.08);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    border-color var(--transition),
+    background var(--transition),
+    transform var(--transition);
+}
+
+.pnl-display-toggle:hover,
+.pnl-display-toggle:focus-visible {
+  outline: none;
+  border-color: rgba(217, 173, 103, 0.42);
+  background: rgba(217, 173, 103, 0.16);
+}
+
+.pnl-display-toggle:active {
+  transform: translateY(1px);
+}
+
+.pnl-card > .pnl-display-toggle {
+  position: absolute;
+  top: 12px;
+  right: 12px;
 }
 
 .pnl-card--profit {
@@ -2048,6 +2095,45 @@ p {
 
 .pnl-card--loss .pnl-card-value {
   color: #ff7474;
+}
+
+.pnl-card-details {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(245, 240, 232, 0.12);
+}
+
+.pnl-card-detail {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+}
+
+.pnl-card-detail-label {
+  min-width: 0;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-align: left;
+  text-transform: uppercase;
+  color: rgba(245, 240, 232, 0.6);
+}
+
+.pnl-card-detail-value {
+  min-width: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+  text-align: right;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+.pnl-card-detail-value--muted {
+  color: var(--text-muted);
 }
 
 .event-list {

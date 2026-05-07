@@ -27,6 +27,11 @@ var EVENT_KIND_LABELS = {
   future: "Future Events"
 };
 var PNL_KIND_LABEL = "Total P&L";
+var PNL_VALUE_DISPLAY_STORAGE_KEY = "tradingCharts.pnlValueDisplayMode";
+var PNL_VALUE_DISPLAY_MODES = {
+  compact: "compact",
+  full: "full"
+};
 var LEVEL_META = {
   low: {
     percent: 33,
@@ -377,6 +382,26 @@ function normalizeAmount(value) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function normalizeOptionalAmount(entry, fieldName) {
+  if (!entry || !Object.prototype.hasOwnProperty.call(entry, fieldName)) {
+    return null;
+  }
+
+  if (typeof entry[fieldName] === "number") {
+    return Number.isFinite(entry[fieldName]) ? entry[fieldName] : null;
+  }
+
+  var normalized = String(entry[fieldName] || "")
+    .replace(/[^0-9.+-]/g, "")
+    .trim();
+  if (!normalized) {
+    return null;
+  }
+
+  var parsed = Number(normalized);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
 function normalizePnlEntry(entry, symbol) {
   var dateInfo = parseDateFromEventValue(entry.date);
   if (!dateInfo) {
@@ -386,6 +411,9 @@ function normalizePnlEntry(entry, symbol) {
   var profit = Math.max(0, normalizeAmount(entry.profit));
   var loss = Math.max(0, normalizeAmount(entry.loss));
   var net = profit > 0 ? profit : loss > 0 ? -loss : 0;
+  var brokerageAndNetCharges = normalizeOptionalAmount(entry, "brokerage_and_net_charges");
+  var totalTradedValue = normalizeOptionalAmount(entry, "total_traded_value");
+  var totalTradesTook = normalizeOptionalAmount(entry, "total_trades_took");
 
   return {
     symbol: symbol,
@@ -395,7 +423,10 @@ function normalizePnlEntry(entry, symbol) {
     dateLabel: String(entry.date || ""),
     profit: profit,
     loss: loss,
-    net: net
+    net: net,
+    brokerageAndNetCharges: brokerageAndNetCharges,
+    totalTradedValue: totalTradedValue,
+    totalTradesTook: totalTradesTook
   };
 }
 
@@ -525,7 +556,13 @@ function buildPnlIndex(entries, symbol) {
 
   (entries || []).forEach(function collect(entry) {
     var normalized = normalizePnlEntry(entry, symbol);
-    if (!normalized || !normalized.net) {
+    if (
+      !normalized ||
+      (!normalized.net &&
+        normalized.brokerageAndNetCharges === null &&
+        normalized.totalTradedValue === null &&
+        normalized.totalTradesTook === null)
+    ) {
       return;
     }
 
@@ -633,6 +670,24 @@ function clearIndexMonth(target, symbol, yearMonth) {
 (function tradingChartCalendar() {
   var chartIndex = buildChartIndex([], DEFAULT_SYMBOLS);
 
+  function readPnlValueDisplayMode() {
+    try {
+      return window.localStorage.getItem(PNL_VALUE_DISPLAY_STORAGE_KEY) === PNL_VALUE_DISPLAY_MODES.full
+        ? PNL_VALUE_DISPLAY_MODES.full
+        : PNL_VALUE_DISPLAY_MODES.compact;
+    } catch (error) {
+      return PNL_VALUE_DISPLAY_MODES.compact;
+    }
+  }
+
+  function writePnlValueDisplayMode(mode) {
+    try {
+      window.localStorage.setItem(PNL_VALUE_DISPLAY_STORAGE_KEY, mode);
+    } catch (error) {
+      // Storage can be unavailable in private or file contexts; the in-memory state still works.
+    }
+  }
+
   var monthFormatter = new Intl.DateTimeFormat("en-US", {
     month: "long",
     year: "numeric",
@@ -640,6 +695,9 @@ function clearIndexMonth(target, symbol, yearMonth) {
   });
   var pnlFormatter = new Intl.NumberFormat("en-IN", {
     minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+  var countFormatter = new Intl.NumberFormat("en-IN", {
     maximumFractionDigits: 2
   });
 
@@ -662,6 +720,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
   var state = {
     symbol: "NIFTY50",
     yearMonth: null,
+    pnlValueDisplayMode: readPnlValueDisplayMode(),
     activeMonthEntries: {},
     liveThumbs: new Set(),
     modalImage: null,
@@ -854,18 +913,26 @@ function clearIndexMonth(target, symbol, yearMonth) {
 
     var totalProfit = 0;
     var totalLoss = 0;
+    var totalBrokerageAndNetCharges = 0;
+    var hasBrokerageAndNetCharges = false;
 
     dayKeys.forEach(function eachDay(dayKey) {
       var entry = monthEntries[dayKey];
       totalProfit += Math.max(0, Number(entry && entry.profit) || 0);
       totalLoss += Math.max(0, Number(entry && entry.loss) || 0);
+      if (entry && entry.brokerageAndNetCharges !== null) {
+        hasBrokerageAndNetCharges = true;
+        totalBrokerageAndNetCharges += Math.max(0, Number(entry.brokerageAndNetCharges) || 0);
+      }
     });
 
-    var net = totalProfit - totalLoss;
+    var net = totalProfit - totalLoss - totalBrokerageAndNetCharges;
 
     return {
       totalProfit: totalProfit,
       totalLoss: totalLoss,
+      totalBrokerageAndNetCharges: totalBrokerageAndNetCharges,
+      hasBrokerageAndNetCharges: hasBrokerageAndNetCharges,
       net: net,
       tone: getPnlTone(net)
     };
@@ -895,9 +962,58 @@ function clearIndexMonth(target, symbol, yearMonth) {
   }
 
   function formatPnlValue(value) {
+    return formatPnlMoney(value, true);
+  }
+
+  function formatPnlMoney(value, signed, displayMode) {
     var numeric = Number(value || 0);
-    var sign = numeric > 0 ? "+" : numeric < 0 ? "-" : "";
-    return sign + pnlFormatter.format(Math.abs(numeric));
+    var sign = signed && numeric > 0 ? "+" : numeric < 0 ? "-" : "";
+    var mode = displayMode || state.pnlValueDisplayMode;
+    if (mode === PNL_VALUE_DISPLAY_MODES.full) {
+      return sign + "₹" + pnlFormatter.format(Math.abs(numeric));
+    }
+
+    return sign + formatCompactPnlMoney(Math.abs(numeric));
+  }
+
+  function formatCompactPnlMoney(absValue) {
+    var value = Number(absValue || 0);
+    var unit = "";
+    var scaled = value;
+
+    if (value >= 10000000) {
+      scaled = value / 10000000;
+      unit = "Cr";
+    } else if (value >= 100000) {
+      scaled = value / 100000;
+      unit = "L";
+    } else if (value >= 1000) {
+      scaled = value / 1000;
+      unit = "K";
+    }
+
+    return "₹" + countFormatter.format(roundToPrecision(scaled, 2)) + unit;
+  }
+
+  function roundToPrecision(value, digits) {
+    var multiplier = Math.pow(10, digits);
+    return Math.round(value * multiplier) / multiplier;
+  }
+
+  function formatOptionalAmount(value, displayMode) {
+    if (value === null || !Number.isFinite(Number(value))) {
+      return "Unavailable";
+    }
+
+    return formatPnlMoney(value, false, displayMode);
+  }
+
+  function formatOptionalCount(value) {
+    if (value === null || !Number.isFinite(Number(value))) {
+      return "Unavailable";
+    }
+
+    return countFormatter.format(Number(value));
   }
 
   function getPnlTone(net) {
@@ -912,9 +1028,33 @@ function clearIndexMonth(target, symbol, yearMonth) {
     return "flat";
   }
 
-  function createMonthlyPnlSummary(summary, symbol, yearMonth) {
+  function createPnlDisplayToggle() {
+    var button = document.createElement("button");
+    var isFullMode = state.pnlValueDisplayMode === PNL_VALUE_DISPLAY_MODES.full;
+    button.type = "button";
+    button.className = "pnl-display-toggle";
+    button.dataset.pnlDisplayToggle = "true";
+    button.setAttribute("aria-pressed", String(isFullMode));
+    button.setAttribute(
+      "aria-label",
+      isFullMode ? "Show compact P&L values" : "Show full P&L values"
+    );
+    button.title = isFullMode
+      ? "Show compact P&L values"
+      : "Show full P&L values";
+    button.textContent = isFullMode ? "123" : "K/L";
+    return button;
+  }
+
+  function createMonthlyPnlSummary(summary, symbol, yearMonth, options) {
+    var config = options || {};
+    var displayMode = config.displayMode || state.pnlValueDisplayMode;
     var wrapper = document.createElement("div");
-    wrapper.className = "monthly-pnl-summary monthly-pnl-summary--" + summary.tone;
+    wrapper.className =
+      "monthly-pnl-summary monthly-pnl-summary--" +
+      summary.tone +
+      " monthly-pnl-summary--" +
+      displayMode;
     if (symbol && yearMonth) {
       wrapper.dataset.monthlyPnlSymbol = symbol;
       wrapper.dataset.monthlyPnlMonth = yearMonth;
@@ -933,7 +1073,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
     profitLabel.textContent = "Profit";
     var profitValue = document.createElement("span");
     profitValue.className = "monthly-pnl-value monthly-pnl-value--profit";
-    profitValue.textContent = formatPnlValue(summary.totalProfit);
+    profitValue.textContent = formatPnlMoney(summary.totalProfit, true, displayMode);
     profit.appendChild(profitLabel);
     profit.appendChild(profitValue);
 
@@ -944,10 +1084,24 @@ function clearIndexMonth(target, symbol, yearMonth) {
     lossLabel.textContent = "Loss";
     var lossValue = document.createElement("span");
     lossValue.className = "monthly-pnl-value monthly-pnl-value--loss";
-    lossValue.textContent =
-      (summary.totalLoss > 0 ? "-" : "") + pnlFormatter.format(summary.totalLoss);
+    lossValue.textContent = formatPnlMoney(-summary.totalLoss, true, displayMode);
     loss.appendChild(lossLabel);
     loss.appendChild(lossValue);
+
+    var brokerage = document.createElement("p");
+    brokerage.className = "monthly-pnl-line";
+    var brokerageLabel = document.createElement("span");
+    brokerageLabel.className = "monthly-pnl-label";
+    brokerageLabel.textContent = "Brokerage";
+    var brokerageValue = document.createElement("span");
+    brokerageValue.className =
+      "monthly-pnl-value" +
+      (summary.hasBrokerageAndNetCharges ? "" : " monthly-pnl-value--muted");
+    brokerageValue.textContent = summary.hasBrokerageAndNetCharges
+      ? formatPnlMoney(summary.totalBrokerageAndNetCharges, false, displayMode)
+      : "Unavailable";
+    brokerage.appendChild(brokerageLabel);
+    brokerage.appendChild(brokerageValue);
 
     var net = document.createElement("p");
     net.className = "monthly-pnl-line monthly-pnl-line--net";
@@ -957,12 +1111,13 @@ function clearIndexMonth(target, symbol, yearMonth) {
     var netValue = document.createElement("span");
     netValue.className =
       "monthly-pnl-value monthly-pnl-value--net monthly-pnl-value--" + summary.tone;
-    netValue.textContent = formatPnlValue(summary.net);
+    netValue.textContent = formatPnlMoney(summary.net, true, displayMode);
     net.appendChild(netLabel);
     net.appendChild(netValue);
 
     wrapper.appendChild(profit);
     wrapper.appendChild(loss);
+    wrapper.appendChild(brokerage);
     wrapper.appendChild(net);
     return wrapper;
   }
@@ -971,6 +1126,8 @@ function clearIndexMonth(target, symbol, yearMonth) {
     var summary = getMonthlyPnlSummary(symbol, yearMonth);
 
     openModalFrame("Monthly P&L Summary", symbol + " · " + describeYearMonth(yearMonth), "pnl-summary");
+    lightbox.dataset.pnlSymbol = symbol;
+    lightbox.dataset.pnlMonth = yearMonth;
 
     if (!summary) {
       renderLightboxError("No monthly P&L data is available for this month.");
@@ -979,6 +1136,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
 
     var card = document.createElement("div");
     card.className = "pnl-card pnl-card--summary pnl-card--" + summary.tone;
+    card.appendChild(createPnlDisplayToggle());
     card.appendChild(createMonthlyPnlSummary(summary));
     lightboxBody.replaceChildren(card);
   }
@@ -1069,6 +1227,9 @@ function clearIndexMonth(target, symbol, yearMonth) {
     lightboxMeta.textContent = "";
     lightbox.hidden = true;
     lightbox.removeAttribute("data-mode");
+    lightbox.removeAttribute("data-pnl-symbol");
+    lightbox.removeAttribute("data-pnl-date");
+    lightbox.removeAttribute("data-pnl-month");
     document.body.style.overflow = "";
   }
 
@@ -1678,6 +1839,8 @@ function clearIndexMonth(target, symbol, yearMonth) {
     var pnlEntry = getPnlForIsoDate(symbol, isoDate);
 
     openModalFrame(PNL_KIND_LABEL, symbol + " · " + isoDate, "pnl");
+    lightbox.dataset.pnlSymbol = symbol;
+    lightbox.dataset.pnlDate = isoDate;
 
     if (!pnlEntry) {
       renderLightboxError("No P&L data is available for this day.");
@@ -1686,6 +1849,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
 
     var card = document.createElement("div");
     card.className = "pnl-card pnl-card--" + getPnlTone(pnlEntry.net);
+    card.appendChild(createPnlDisplayToggle());
 
     var label = document.createElement("p");
     label.className = "pnl-card-label";
@@ -1695,9 +1859,72 @@ function clearIndexMonth(target, symbol, yearMonth) {
     value.className = "pnl-card-value";
     value.textContent = formatPnlValue(pnlEntry.net);
 
+    var details = document.createElement("div");
+    details.className = "pnl-card-details";
+    [
+      {
+        label: "Brokerage & Net Charges",
+        value: formatOptionalAmount(pnlEntry.brokerageAndNetCharges)
+      },
+      {
+        label: "Total Traded Value",
+        value: formatOptionalAmount(pnlEntry.totalTradedValue)
+      },
+      {
+        label: "Total Trades Took",
+        value: formatOptionalCount(pnlEntry.totalTradesTook)
+      }
+    ].forEach(function appendDetail(detail) {
+      var row = document.createElement("p");
+      row.className = "pnl-card-detail";
+
+      var detailLabel = document.createElement("span");
+      detailLabel.className = "pnl-card-detail-label";
+      detailLabel.textContent = detail.label;
+
+      var detailValue = document.createElement("span");
+      detailValue.className =
+        "pnl-card-detail-value" +
+        (detail.value === "Unavailable" ? " pnl-card-detail-value--muted" : "");
+      detailValue.textContent = detail.value;
+
+      row.appendChild(detailLabel);
+      row.appendChild(detailValue);
+      details.appendChild(row);
+    });
+
     card.appendChild(label);
     card.appendChild(value);
+    card.appendChild(details);
     lightboxBody.replaceChildren(card);
+  }
+
+  function refreshOpenPnlSurface() {
+    if (lightbox.hidden) {
+      return;
+    }
+
+    if (lightbox.dataset.mode === "pnl" && lightbox.dataset.pnlDate) {
+      openPnlModal(lightbox.dataset.pnlSymbol || state.symbol, lightbox.dataset.pnlDate);
+      return;
+    }
+
+    if (lightbox.dataset.mode === "pnl-summary" && lightbox.dataset.pnlMonth) {
+      openMonthlyPnlSummaryModal(
+        lightbox.dataset.pnlSymbol || state.symbol,
+        lightbox.dataset.pnlMonth
+      );
+    }
+  }
+
+  function togglePnlValueDisplayMode() {
+    state.pnlValueDisplayMode =
+      state.pnlValueDisplayMode === PNL_VALUE_DISPLAY_MODES.full
+        ? PNL_VALUE_DISPLAY_MODES.compact
+        : PNL_VALUE_DISPLAY_MODES.full;
+    writePnlValueDisplayMode(state.pnlValueDisplayMode);
+    renderCalendar();
+    refreshOpenPnlSurface();
   }
 
   function updateEmptyState(hasCharts) {
@@ -2141,7 +2368,9 @@ function clearIndexMonth(target, symbol, yearMonth) {
       }
 
       if (isSummaryCell) {
-        cell.appendChild(createMonthlyPnlSummary(monthPnlSummary, symbol, yearMonth));
+        cell.appendChild(createMonthlyPnlSummary(monthPnlSummary, symbol, yearMonth, {
+          displayMode: PNL_VALUE_DISPLAY_MODES.full
+        }));
       }
 
       fragment.appendChild(cell);
@@ -2488,6 +2717,13 @@ function clearIndexMonth(target, symbol, yearMonth) {
   });
 
   calendarGrid.addEventListener("click", function onGridClick(event) {
+    var pnlDisplayToggle = event.target.closest("[data-pnl-display-toggle]");
+    if (pnlDisplayToggle && calendarGrid.contains(pnlDisplayToggle)) {
+      event.preventDefault();
+      togglePnlValueDisplayMode();
+      return;
+    }
+
     var monthlyPnlTrigger = event.target.closest("[data-monthly-pnl-month]");
     if (monthlyPnlTrigger && calendarGrid.contains(monthlyPnlTrigger)) {
       openMonthlyPnlSummaryModal(
@@ -2528,6 +2764,13 @@ function clearIndexMonth(target, symbol, yearMonth) {
   });
 
   lightboxBody.addEventListener("click", function onLightboxBodyClick(event) {
+    var pnlDisplayToggle = event.target.closest("[data-pnl-display-toggle]");
+    if (pnlDisplayToggle && lightboxBody.contains(pnlDisplayToggle)) {
+      event.preventDefault();
+      togglePnlValueDisplayMode();
+      return;
+    }
+
     var zoomTrigger = event.target.closest("[data-image-zoom]");
     if (zoomTrigger && lightboxBody.contains(zoomTrigger) && !zoomTrigger.disabled) {
       setLightboxZoom(
