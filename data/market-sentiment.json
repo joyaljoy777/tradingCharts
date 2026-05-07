@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-07T07:34:11.087Z",
+  "generatedAt": "2026-05-07T09:47:09.311Z",
   "source": "yahoo-finance-chart",
   "successCount": 6,
   "staleCount": 0,
@@ -10,16 +10,16 @@
       "label": "GIFT NIFTY(NIFTY NSE)",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/%5ENSEI?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/indices/gift-nifty-50-c1-futures-chart",
-      "current": 24405.85,
+      "current": 24314.55,
       "previousClose": 24330.95,
-      "change": 74.89999999999782,
-      "pct": 0.30783837047052337,
-      "sentiment": "Mild Bullish",
-      "trendGroup": "bullish",
-      "arrow": "↑",
+      "change": -16.400000000001455,
+      "pct": -0.06740386215910786,
+      "sentiment": "Mild Bearish",
+      "trendGroup": "bearish",
+      "arrow": "↓",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T07:34:11.087Z",
+      "fetchedAt": "2026-05-07T09:47:09.311Z",
       "errorMessage": ""
     },
     {
@@ -36,7 +36,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T07:34:11.087Z",
+      "fetchedAt": "2026-05-07T09:47:09.311Z",
       "errorMessage": ""
     },
     {
@@ -53,7 +53,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T07:34:11.087Z",
+      "fetchedAt": "2026-05-07T09:47:09.311Z",
       "errorMessage": ""
     },
     {
@@ -70,7 +70,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T07:34:11.087Z",
+      "fetchedAt": "2026-05-07T09:47:09.311Z",
       "errorMessage": ""
     },
     {
@@ -78,16 +78,16 @@
       "label": "Hang Seng",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/%5EHSI?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/indices/hang-sen-40-chart",
-      "current": 26638.66,
+      "current": 26626.28,
       "previousClose": 26213.78,
-      "change": 424.880000000001,
-      "pct": 1.6208269085954068,
+      "change": 412.5,
+      "pct": 1.5735998394737425,
       "sentiment": "Strong Bullish",
       "trendGroup": "bullish",
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T07:34:11.087Z",
+      "fetchedAt": "2026-05-07T09:47:09.311Z",
       "errorMessage": ""
     },
     {
@@ -95,16 +95,16 @@
       "label": "Crude Oil (WTI)",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/commodities/crude-oil-streaming-chart",
-      "current": 92.97,
+      "current": 92.42,
       "previousClose": 95.08,
-      "change": -2.1099999999999994,
-      "pct": -2.2191838451830033,
+      "change": -2.6599999999999966,
+      "pct": -2.797644089188049,
       "sentiment": "Strong Bearish",
       "trendGroup": "bearish",
       "arrow": "↓",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-07T07:34:11.087Z",
+      "fetchedAt": "2026-05-07T09:47:09.311Z",
       "errorMessage": ""
     }
   ]
