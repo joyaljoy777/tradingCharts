@@ -32,6 +32,25 @@ var PNL_VALUE_DISPLAY_MODES = {
   compact: "compact",
   full: "full"
 };
+var PNL_SUMMARY_STATEMENT_MODES = {
+  monthly: "monthly",
+  calendarYear: "calendar-year",
+  financialYear: "financial-year"
+};
+var PNL_SUMMARY_STATEMENT_OPTIONS = [
+  {
+    key: PNL_SUMMARY_STATEMENT_MODES.monthly,
+    label: "Monthly statement"
+  },
+  {
+    key: PNL_SUMMARY_STATEMENT_MODES.calendarYear,
+    label: "Yearly statement"
+  },
+  {
+    key: PNL_SUMMARY_STATEMENT_MODES.financialYear,
+    label: "Financial year"
+  }
+];
 var LEVEL_META = {
   low: {
     percent: 33,
@@ -704,6 +723,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
   var symbolSelect = document.getElementById("symbolSelect");
   var monthPicker = document.getElementById("monthPicker");
   var prevMonthBtn = document.getElementById("prevMonthBtn");
+  var todayMonthBtn = document.getElementById("todayMonthBtn");
   var nextMonthBtn = document.getElementById("nextMonthBtn");
   var calendarShell = document.querySelector(".calendar-shell");
   var analyticsShell = document.getElementById("analyticsShell");
@@ -721,6 +741,8 @@ function clearIndexMonth(target, symbol, yearMonth) {
     symbol: "NIFTY50",
     yearMonth: null,
     pnlValueDisplayMode: readPnlValueDisplayMode(),
+    pnlSummaryStatementMode: PNL_SUMMARY_STATEMENT_MODES.monthly,
+    pnlSummaryRenderToken: 0,
     activeMonthEntries: {},
     liveThumbs: new Set(),
     modalImage: null,
@@ -787,6 +809,33 @@ function clearIndexMonth(target, symbol, yearMonth) {
 
     var date = new Date(Date.UTC(parsed.year, parsed.month - 1 + offset, 1));
     return formatYearMonth(date.getUTCFullYear(), date.getUTCMonth() + 1);
+  }
+
+  function compareYearMonths(left, right) {
+    var leftParsed = parseYearMonth(left);
+    var rightParsed = parseYearMonth(right);
+    if (!leftParsed || !rightParsed) {
+      return 0;
+    }
+
+    return (leftParsed.year - rightParsed.year) || (leftParsed.month - rightParsed.month);
+  }
+
+  function buildYearMonthRange(start, end) {
+    var months = [];
+    var parsedStart = parseYearMonth(start);
+    var parsedEnd = parseYearMonth(end);
+    if (!parsedStart || !parsedEnd || compareYearMonths(start, end) > 0) {
+      return months;
+    }
+
+    var cursor = start;
+    while (compareYearMonths(cursor, end) <= 0) {
+      months.push(cursor);
+      cursor = shiftYearMonth(cursor, 1);
+    }
+
+    return months;
   }
 
   function describeYearMonth(yearMonth) {
@@ -901,13 +950,11 @@ function clearIndexMonth(target, symbol, yearMonth) {
   }
 
   function getMonthlyPnlSummary(symbol, yearMonth) {
-    var monthEntries = (state.pnl[symbol] && state.pnl[symbol][yearMonth]) || null;
-    if (!monthEntries) {
-      return null;
-    }
+    return getPnlSummaryForMonths(symbol, [yearMonth]);
+  }
 
-    var dayKeys = Object.keys(monthEntries);
-    if (!dayKeys.length) {
+  function getPnlSummaryForMonths(symbol, yearMonths) {
+    if (!symbol || !Array.isArray(yearMonths) || !yearMonths.length) {
       return null;
     }
 
@@ -915,16 +962,29 @@ function clearIndexMonth(target, symbol, yearMonth) {
     var totalLoss = 0;
     var totalBrokerageAndNetCharges = 0;
     var hasBrokerageAndNetCharges = false;
+    var hasEntries = false;
 
-    dayKeys.forEach(function eachDay(dayKey) {
-      var entry = monthEntries[dayKey];
-      totalProfit += Math.max(0, Number(entry && entry.profit) || 0);
-      totalLoss += Math.max(0, Number(entry && entry.loss) || 0);
-      if (entry && entry.brokerageAndNetCharges !== null) {
-        hasBrokerageAndNetCharges = true;
-        totalBrokerageAndNetCharges += Math.max(0, Number(entry.brokerageAndNetCharges) || 0);
+    yearMonths.forEach(function eachMonth(yearMonth) {
+      var monthEntries = (state.pnl[symbol] && state.pnl[symbol][yearMonth]) || null;
+      if (!monthEntries) {
+        return;
       }
+
+      Object.keys(monthEntries).forEach(function eachDay(dayKey) {
+        var entry = monthEntries[dayKey];
+        hasEntries = true;
+        totalProfit += Math.max(0, Number(entry && entry.profit) || 0);
+        totalLoss += Math.max(0, Number(entry && entry.loss) || 0);
+        if (entry && entry.brokerageAndNetCharges !== null) {
+          hasBrokerageAndNetCharges = true;
+          totalBrokerageAndNetCharges += Math.max(0, Number(entry.brokerageAndNetCharges) || 0);
+        }
+      });
     });
+
+    if (!hasEntries) {
+      return null;
+    }
 
     var net = totalProfit - totalLoss - totalBrokerageAndNetCharges;
 
@@ -935,6 +995,54 @@ function clearIndexMonth(target, symbol, yearMonth) {
       hasBrokerageAndNetCharges: hasBrokerageAndNetCharges,
       net: net,
       tone: getPnlTone(net)
+    };
+  }
+
+  function getPnlSummaryStatementConfig(mode, yearMonth) {
+    var parsed = parseYearMonth(yearMonth);
+    if (!parsed) {
+      return null;
+    }
+
+    var normalizedMode = PNL_SUMMARY_STATEMENT_OPTIONS.some(function hasMode(option) {
+      return option.key === mode;
+    })
+      ? mode
+      : state.pnlSummaryStatementMode;
+
+    if (normalizedMode === PNL_SUMMARY_STATEMENT_MODES.calendarYear) {
+      var calendarStart = formatYearMonth(parsed.year, 1);
+      var calendarEnd = yearMonth;
+
+      return {
+        mode: normalizedMode,
+        title: "Yearly P&L Summary",
+        label: "Calendar year through selected month",
+        rangeLabel: String(parsed.year),
+        months: buildYearMonthRange(calendarStart, calendarEnd)
+      };
+    }
+
+    if (normalizedMode === PNL_SUMMARY_STATEMENT_MODES.financialYear) {
+      var financialStartYear = parsed.month >= 4 ? parsed.year : parsed.year - 1;
+      var financialStart = formatYearMonth(financialStartYear, 4);
+      var financialEnd = yearMonth;
+
+      return {
+        mode: normalizedMode,
+        title: "Financial Year P&L Summary",
+        label: "Financial year through selected month",
+        rangeLabel: "FY " + financialStartYear + "-" + String(financialStartYear + 1).slice(2),
+        months: buildYearMonthRange(financialStart, financialEnd)
+      };
+    }
+
+    return {
+      mode: PNL_SUMMARY_STATEMENT_MODES.monthly,
+      title: "Monthly P&L Summary",
+      label: "Monthly statement",
+      rangeLabel: describeYearMonth(yearMonth),
+      months: [yearMonth]
     };
   }
 
@@ -1046,6 +1154,27 @@ function clearIndexMonth(target, symbol, yearMonth) {
     return button;
   }
 
+  function createPnlSummaryStatementControls(activeMode) {
+    var controls = document.createElement("div");
+    controls.className = "pnl-summary-mode-control";
+    controls.setAttribute("role", "tablist");
+    controls.setAttribute("aria-label", "P&L summary statement type");
+
+    PNL_SUMMARY_STATEMENT_OPTIONS.forEach(function addOption(option) {
+      var button = document.createElement("button");
+      var isActive = option.key === activeMode;
+      button.type = "button";
+      button.className = "pnl-summary-mode-button";
+      button.dataset.pnlSummaryMode = option.key;
+      button.setAttribute("role", "tab");
+      button.setAttribute("aria-selected", String(isActive));
+      button.textContent = option.label;
+      controls.appendChild(button);
+    });
+
+    return controls;
+  }
+
   function createMonthlyPnlSummary(summary, symbol, yearMonth, options) {
     var config = options || {};
     var displayMode = config.displayMode || state.pnlValueDisplayMode;
@@ -1123,22 +1252,65 @@ function clearIndexMonth(target, symbol, yearMonth) {
   }
 
   function openMonthlyPnlSummaryModal(symbol, yearMonth) {
-    var summary = getMonthlyPnlSummary(symbol, yearMonth);
-
+    state.pnlSummaryStatementMode = PNL_SUMMARY_STATEMENT_MODES.monthly;
     openModalFrame("Monthly P&L Summary", symbol + " · " + describeYearMonth(yearMonth), "pnl-summary");
     lightbox.dataset.pnlSymbol = symbol;
     lightbox.dataset.pnlMonth = yearMonth;
+    renderPnlSummaryStatementModal(symbol, yearMonth, state.pnlSummaryStatementMode);
+  }
 
+  async function renderPnlSummaryStatementModal(symbol, yearMonth, mode) {
+    var config = getPnlSummaryStatementConfig(mode, yearMonth);
+    if (!config) {
+      renderLightboxError("No P&L summary range is available.");
+      return;
+    }
+
+    var renderToken = state.pnlSummaryRenderToken + 1;
+    state.pnlSummaryRenderToken = renderToken;
+    state.pnlSummaryStatementMode = config.mode;
+    lightboxTitle.textContent = config.title;
+    lightboxMeta.textContent = symbol + " · " + config.rangeLabel;
+
+    if (config.mode !== PNL_SUMMARY_STATEMENT_MODES.monthly) {
+      renderPnlSummaryLoading(config.mode);
+      await loadPnlDataForSummaryRange(symbol, config.months);
+      if (renderToken !== state.pnlSummaryRenderToken || lightbox.hidden) {
+        return;
+      }
+    }
+
+    var summary = getPnlSummaryForMonths(symbol, config.months);
     if (!summary) {
-      renderLightboxError("No monthly P&L data is available for this month.");
+      renderLightboxError("No P&L data is available for this summary range.");
       return;
     }
 
     var card = document.createElement("div");
     card.className = "pnl-card pnl-card--summary pnl-card--" + summary.tone;
-    card.appendChild(createPnlDisplayToggle());
+    card.appendChild(createPnlSummaryToolbar(config.mode));
     card.appendChild(createMonthlyPnlSummary(summary));
     lightboxBody.replaceChildren(card);
+  }
+
+  function renderPnlSummaryLoading(activeMode) {
+    var card = document.createElement("div");
+    card.className = "pnl-card pnl-card--summary pnl-card--flat";
+    card.appendChild(createPnlSummaryToolbar(activeMode));
+
+    var message = document.createElement("p");
+    message.className = "pnl-summary-loading";
+    message.textContent = "Loading P&L summary...";
+    card.appendChild(message);
+    lightboxBody.replaceChildren(card);
+  }
+
+  function createPnlSummaryToolbar(activeMode) {
+    var toolbar = document.createElement("div");
+    toolbar.className = "pnl-summary-toolbar";
+    toolbar.appendChild(createPnlSummaryStatementControls(activeMode));
+    toolbar.appendChild(createPnlDisplayToggle());
+    return toolbar;
   }
 
   function buildCalendarCells(yearMonth) {
@@ -1910,9 +2082,10 @@ function clearIndexMonth(target, symbol, yearMonth) {
     }
 
     if (lightbox.dataset.mode === "pnl-summary" && lightbox.dataset.pnlMonth) {
-      openMonthlyPnlSummaryModal(
+      renderPnlSummaryStatementModal(
         lightbox.dataset.pnlSymbol || state.symbol,
-        lightbox.dataset.pnlMonth
+        lightbox.dataset.pnlMonth,
+        state.pnlSummaryStatementMode
       );
     }
   }
@@ -2429,6 +2602,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
     var nonCalendarMode = isNonCalendarSymbol(state.symbol);
     monthPicker.disabled = nonCalendarMode;
     prevMonthBtn.disabled = nonCalendarMode;
+    todayMonthBtn.disabled = nonCalendarMode || state.yearMonth === getCurrentYearMonth();
     nextMonthBtn.disabled = nonCalendarMode;
     updateContentView();
   }
@@ -2657,6 +2831,31 @@ function clearIndexMonth(target, symbol, yearMonth) {
       return;
     }
 
+    await loadPnlDataForMonth(symbol, yearMonth, true);
+  }
+
+  async function loadPnlDataForSummaryRange(symbol, yearMonths) {
+    if (isNonCalendarSymbol(symbol) || !Array.isArray(yearMonths) || !yearMonths.length) {
+      return;
+    }
+
+    applyEmbeddedTemporalData();
+
+    if (window.location.protocol === "file:") {
+      return;
+    }
+
+    await Promise.all(yearMonths.map(function loadMonth(yearMonth) {
+      return loadPnlDataForMonth(symbol, yearMonth, false);
+    }));
+  }
+
+  async function loadPnlDataForMonth(symbol, yearMonth, shouldRenderSelection) {
+    var parsed = parseYearMonth(yearMonth);
+    if (!parsed || !symbol) {
+      return;
+    }
+
     var loadKey = symbol + "::" + yearMonth;
     if (state.pnlDataLoaded[loadKey] || state.pnlDataLoading[loadKey]) {
       return;
@@ -2681,7 +2880,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
         delete state.pnlDataLoaded[loadKey];
       }
 
-      if (state.symbol === symbol && state.yearMonth === yearMonth) {
+      if (shouldRenderSelection && state.symbol === symbol && state.yearMonth === yearMonth) {
         renderCalendar();
       }
     } finally {
@@ -2714,6 +2913,10 @@ function clearIndexMonth(target, symbol, yearMonth) {
     if (next) {
       setState(state.symbol, next);
     }
+  });
+
+  todayMonthBtn.addEventListener("click", function onTodayMonth() {
+    setState(state.symbol, getCurrentYearMonth());
   });
 
   calendarGrid.addEventListener("click", function onGridClick(event) {
@@ -2768,6 +2971,17 @@ function clearIndexMonth(target, symbol, yearMonth) {
     if (pnlDisplayToggle && lightboxBody.contains(pnlDisplayToggle)) {
       event.preventDefault();
       togglePnlValueDisplayMode();
+      return;
+    }
+
+    var pnlSummaryModeTrigger = event.target.closest("[data-pnl-summary-mode]");
+    if (pnlSummaryModeTrigger && lightboxBody.contains(pnlSummaryModeTrigger)) {
+      event.preventDefault();
+      renderPnlSummaryStatementModal(
+        lightbox.dataset.pnlSymbol || state.symbol,
+        lightbox.dataset.pnlMonth || state.yearMonth,
+        pnlSummaryModeTrigger.dataset.pnlSummaryMode
+      );
       return;
     }
 

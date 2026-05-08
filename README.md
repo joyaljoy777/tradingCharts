@@ -81,6 +81,7 @@ Important implementation details:
 - main selection event: `trading-chart-selection-change`
 - `script.js` owns the shared app state for selected symbol and month
 - month navigation is disabled for non-calendar symbols
+- the `Today` button jumps the selected calendar symbol back to the browser's current month and is disabled when already on that month
 
 ## Main files
 
@@ -236,6 +237,8 @@ It supports:
 - holiday labels
 - daily P&L markers
 - monthly P&L summary on the last Saturday tile
+- monthly/yearly/financial-year P&L summary popup switching for `P_AND_L_AND_LEARNINGS`
+- `Today` month navigation for calendar symbols
 
 ### Screenshot naming rules
 
@@ -326,7 +329,13 @@ charts/SYMBOL/YEAR/monthname/pnl.json
 - month totals are computed client-side from the loaded month `pnl.json`
 - monthly net is `profit - loss - brokerage_and_net_charges` for all available brokerage entries
 - P&L money values default to compact Indian units (`K`, `L`, `Cr`) in popups and can be toggled to full values; the monthly summary tile always shows full values
-- monthly summary popup shows `Profit`, `Loss`, and `Net`
+- full-value P&L formatting includes the rupee symbol, for example `+₹1,02,368.50`
+- monthly summary popup shows `Profit`, `Loss`, `Brokerage`, and `Net`
+- the monthly summary tile on the last Saturday always opens the summary popup in `Monthly statement` mode
+- the summary popup supports `Monthly statement`, `Yearly statement`, and `Financial year`
+- `Yearly statement` aggregates from January through the selected month of the selected calendar year
+- `Financial year` aggregates from April through the selected month in the selected Indian financial year
+- Indian financial years are treated as April 1 through March 31, and labels use `FY YYYY-YY` format
 
 ## FII / DII flow chart
 
@@ -488,6 +497,8 @@ Yahoo responses seen in this project used `chartPreviousClose`, so the script wa
 ### GitHub Pages
 
 This project is intended to be deployed with **GitHub Actions Pages deployment**, not branch-based Pages publishing.
+
+It remains a plain static site. The app does not require Jekyll, server-side code, routing, or a build step to render the calendar UI. GitHub Pages serves `index.html`, CSS, JavaScript, images, generated JavaScript fallbacks, and JSON assets directly.
 
 Current workflow file:
 
