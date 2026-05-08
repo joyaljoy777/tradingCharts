@@ -1589,8 +1589,8 @@ window.TRADING_CHART_EMBEDDED_DATA = {
               "date": "08-05-2026",
               "profit": 13942.5,
               "loss": 0,
-              "brokerage_and_net_charges": 0,
-              "total_traded_value": 0,
+              "brokerage_and_net_charges": 828.36,
+              "total_traded_value": 490834.5,
               "total_trades_took": 1
             }
           ],
