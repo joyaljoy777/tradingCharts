@@ -325,7 +325,8 @@ charts/SYMBOL/YEAR/monthname/pnl.json
 
 - green bar: profit day
 - red bar: loss day
-- clicking the day bar opens a popup with P&L plus optional brokerage, traded value, and trade count fields
+- clicking the day bar opens a popup with P&L plus optional brokerage, traded value, maximum capital deployed, gain percentage, and trade count fields
+- daily gain percentage uses net after brokerage: `(profit - loss - brokerage_and_net_charges) / maximum_capital_deployed * 100`; when `maximum_capital_deployed` is missing or invalid, it shows `Unavailable`
 - month totals are computed client-side from the loaded month `pnl.json`
 - monthly net is `profit - loss - brokerage_and_net_charges` for all available brokerage entries
 - P&L money values default to compact Indian units (`K`, `L`, `Cr`) in popups and can be toggled to full values; the monthly summary tile always shows full values
@@ -336,6 +337,10 @@ charts/SYMBOL/YEAR/monthname/pnl.json
 - `Yearly statement` aggregates from January through the selected month of the selected calendar year
 - `Financial year` aggregates from April through the selected month in the selected Indian financial year
 - Indian financial years are treated as April 1 through March 31, and labels use `FY YYYY-YY` format
+- summary popups include win metrics with a `Days` / `Amount` toggle
+- `Days` win rate is `net-profitable days after brokerage / total traded P&L days`
+- `Amount` is profit share, not `net profit / net P&L`: it is `sum of positive day net / (sum of positive day net + absolute sum of negative day net)`
+- win rate above or below 50% is not enough to judge profitability because average win size and average loss size matter
 
 ## FII / DII flow chart
 

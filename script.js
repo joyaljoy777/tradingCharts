@@ -51,6 +51,20 @@ var PNL_SUMMARY_STATEMENT_OPTIONS = [
     label: "Financial year"
   }
 ];
+var PNL_WIN_RATE_MODES = {
+  days: "days",
+  amount: "amount"
+};
+var PNL_WIN_RATE_OPTIONS = [
+  {
+    key: PNL_WIN_RATE_MODES.days,
+    label: "Days"
+  },
+  {
+    key: PNL_WIN_RATE_MODES.amount,
+    label: "Amount"
+  }
+];
 var LEVEL_META = {
   low: {
     percent: 33,
@@ -433,6 +447,7 @@ function normalizePnlEntry(entry, symbol) {
   var brokerageAndNetCharges = normalizeOptionalAmount(entry, "brokerage_and_net_charges");
   var totalTradedValue = normalizeOptionalAmount(entry, "total_traded_value");
   var totalTradesTook = normalizeOptionalAmount(entry, "total_trades_took");
+  var maximumCapitalDeployed = normalizeOptionalAmount(entry, "maximum_capital_deployed");
 
   return {
     symbol: symbol,
@@ -445,7 +460,8 @@ function normalizePnlEntry(entry, symbol) {
     net: net,
     brokerageAndNetCharges: brokerageAndNetCharges,
     totalTradedValue: totalTradedValue,
-    totalTradesTook: totalTradesTook
+    totalTradesTook: totalTradesTook,
+    maximumCapitalDeployed: maximumCapitalDeployed
   };
 }
 
@@ -580,7 +596,8 @@ function buildPnlIndex(entries, symbol) {
       (!normalized.net &&
         normalized.brokerageAndNetCharges === null &&
         normalized.totalTradedValue === null &&
-        normalized.totalTradesTook === null)
+        normalized.totalTradesTook === null &&
+        normalized.maximumCapitalDeployed === null)
     ) {
       return;
     }
@@ -742,6 +759,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
     yearMonth: null,
     pnlValueDisplayMode: readPnlValueDisplayMode(),
     pnlSummaryStatementMode: PNL_SUMMARY_STATEMENT_MODES.monthly,
+    pnlWinRateMode: PNL_WIN_RATE_MODES.days,
     pnlSummaryRenderToken: 0,
     activeMonthEntries: {},
     liveThumbs: new Set(),
@@ -963,6 +981,12 @@ function clearIndexMonth(target, symbol, yearMonth) {
     var totalBrokerageAndNetCharges = 0;
     var hasBrokerageAndNetCharges = false;
     var hasEntries = false;
+    var tradedDays = 0;
+    var winningDays = 0;
+    var losingDays = 0;
+    var flatDays = 0;
+    var winningNetTotal = 0;
+    var losingNetTotal = 0;
 
     yearMonths.forEach(function eachMonth(yearMonth) {
       var monthEntries = (state.pnl[symbol] && state.pnl[symbol][yearMonth]) || null;
@@ -972,12 +996,30 @@ function clearIndexMonth(target, symbol, yearMonth) {
 
       Object.keys(monthEntries).forEach(function eachDay(dayKey) {
         var entry = monthEntries[dayKey];
+        var profit = Math.max(0, Number(entry && entry.profit) || 0);
+        var loss = Math.max(0, Number(entry && entry.loss) || 0);
+        var brokerage = entry && entry.brokerageAndNetCharges !== null
+          ? Math.max(0, Number(entry.brokerageAndNetCharges) || 0)
+          : 0;
+        var dayNet = profit - loss - brokerage;
+
         hasEntries = true;
-        totalProfit += Math.max(0, Number(entry && entry.profit) || 0);
-        totalLoss += Math.max(0, Number(entry && entry.loss) || 0);
+        tradedDays += 1;
+        totalProfit += profit;
+        totalLoss += loss;
         if (entry && entry.brokerageAndNetCharges !== null) {
           hasBrokerageAndNetCharges = true;
-          totalBrokerageAndNetCharges += Math.max(0, Number(entry.brokerageAndNetCharges) || 0);
+          totalBrokerageAndNetCharges += brokerage;
+        }
+
+        if (dayNet > 0) {
+          winningDays += 1;
+          winningNetTotal += dayNet;
+        } else if (dayNet < 0) {
+          losingDays += 1;
+          losingNetTotal += Math.abs(dayNet);
+        } else {
+          flatDays += 1;
         }
       });
     });
@@ -993,6 +1035,16 @@ function clearIndexMonth(target, symbol, yearMonth) {
       totalLoss: totalLoss,
       totalBrokerageAndNetCharges: totalBrokerageAndNetCharges,
       hasBrokerageAndNetCharges: hasBrokerageAndNetCharges,
+      tradedDays: tradedDays,
+      winningDays: winningDays,
+      losingDays: losingDays,
+      flatDays: flatDays,
+      winningNetTotal: winningNetTotal,
+      losingNetTotal: losingNetTotal,
+      dayWinRate: tradedDays ? (winningDays / tradedDays) * 100 : null,
+      amountWinRate: winningNetTotal + losingNetTotal > 0
+        ? (winningNetTotal / (winningNetTotal + losingNetTotal)) * 100
+        : null,
       net: net,
       tone: getPnlTone(net)
     };
@@ -1124,6 +1176,33 @@ function clearIndexMonth(target, symbol, yearMonth) {
     return countFormatter.format(Number(value));
   }
 
+  function formatPercent(value) {
+    if (value === null || !Number.isFinite(Number(value))) {
+      return "Unavailable";
+    }
+
+    return countFormatter.format(roundToPrecision(Number(value), 1)) + "%";
+  }
+
+  function getDailyNetAfterCharges(pnlEntry) {
+    var profit = Math.max(0, Number(pnlEntry && pnlEntry.profit) || 0);
+    var loss = Math.max(0, Number(pnlEntry && pnlEntry.loss) || 0);
+    var brokerage = pnlEntry && pnlEntry.brokerageAndNetCharges !== null
+      ? Math.max(0, Number(pnlEntry.brokerageAndNetCharges) || 0)
+      : 0;
+
+    return profit - loss - brokerage;
+  }
+
+  function formatDailyGainPercentage(pnlEntry) {
+    var capital = Number(pnlEntry && pnlEntry.maximumCapitalDeployed);
+    if (!Number.isFinite(capital) || capital <= 0) {
+      return "Unavailable";
+    }
+
+    return formatPercent((getDailyNetAfterCharges(pnlEntry) / capital) * 100);
+  }
+
   function getPnlTone(net) {
     if (net > 0) {
       return "profit";
@@ -1173,6 +1252,72 @@ function clearIndexMonth(target, symbol, yearMonth) {
     });
 
     return controls;
+  }
+
+  function createPnlWinRateControls(activeMode) {
+    var controls = document.createElement("div");
+    controls.className = "pnl-win-rate-mode-control";
+    controls.setAttribute("role", "tablist");
+    controls.setAttribute("aria-label", "P&L win rate calculation type");
+
+    PNL_WIN_RATE_OPTIONS.forEach(function addOption(option) {
+      var button = document.createElement("button");
+      var isActive = option.key === activeMode;
+      button.type = "button";
+      button.className = "pnl-win-rate-mode-button";
+      button.dataset.pnlWinRateMode = option.key;
+      button.setAttribute("role", "tab");
+      button.setAttribute("aria-selected", String(isActive));
+      button.textContent = option.label;
+      controls.appendChild(button);
+    });
+
+    return controls;
+  }
+
+  function createPnlWinRateSummary(summary) {
+    var mode = state.pnlWinRateMode;
+    var value = mode === PNL_WIN_RATE_MODES.amount
+      ? summary.amountWinRate
+      : summary.dayWinRate;
+    var detail = mode === PNL_WIN_RATE_MODES.amount
+      ? formatPnlMoney(summary.winningNetTotal, false) +
+        " wins / " +
+        formatPnlMoney(summary.winningNetTotal + summary.losingNetTotal, false) +
+        " total movement"
+      : summary.winningDays +
+        " wins / " +
+        summary.tradedDays +
+        " traded days" +
+        (summary.flatDays ? " / " + summary.flatDays + " flat" : "");
+
+    var wrapper = document.createElement("div");
+    wrapper.className = "pnl-win-rate-summary";
+
+    var header = document.createElement("div");
+    header.className = "pnl-win-rate-header";
+
+    var label = document.createElement("span");
+    label.className = "pnl-win-rate-label";
+    label.textContent = mode === PNL_WIN_RATE_MODES.amount ? "Profit share" : "Win rate";
+
+    var controls = createPnlWinRateControls(mode);
+
+    header.appendChild(label);
+    header.appendChild(controls);
+
+    var percent = document.createElement("p");
+    percent.className = "pnl-win-rate-value";
+    percent.textContent = formatPercent(value);
+
+    var note = document.createElement("p");
+    note.className = "pnl-win-rate-note";
+    note.textContent = detail;
+
+    wrapper.appendChild(header);
+    wrapper.appendChild(percent);
+    wrapper.appendChild(note);
+    return wrapper;
   }
 
   function createMonthlyPnlSummary(summary, symbol, yearMonth, options) {
@@ -1290,6 +1435,7 @@ function clearIndexMonth(target, symbol, yearMonth) {
     card.className = "pnl-card pnl-card--summary pnl-card--" + summary.tone;
     card.appendChild(createPnlSummaryToolbar(config.mode));
     card.appendChild(createMonthlyPnlSummary(summary));
+    card.appendChild(createPnlWinRateSummary(summary));
     lightboxBody.replaceChildren(card);
   }
 
@@ -2041,6 +2187,14 @@ function clearIndexMonth(target, symbol, yearMonth) {
       {
         label: "Total Traded Value",
         value: formatOptionalAmount(pnlEntry.totalTradedValue)
+      },
+      {
+        label: "Maximum Capital Deployed",
+        value: formatOptionalAmount(pnlEntry.maximumCapitalDeployed)
+      },
+      {
+        label: "Gains Percentage",
+        value: formatDailyGainPercentage(pnlEntry)
       },
       {
         label: "Total Trades Took",
@@ -2981,6 +3135,20 @@ function clearIndexMonth(target, symbol, yearMonth) {
         lightbox.dataset.pnlSymbol || state.symbol,
         lightbox.dataset.pnlMonth || state.yearMonth,
         pnlSummaryModeTrigger.dataset.pnlSummaryMode
+      );
+      return;
+    }
+
+    var pnlWinRateModeTrigger = event.target.closest("[data-pnl-win-rate-mode]");
+    if (pnlWinRateModeTrigger && lightboxBody.contains(pnlWinRateModeTrigger)) {
+      event.preventDefault();
+      state.pnlWinRateMode = pnlWinRateModeTrigger.dataset.pnlWinRateMode === PNL_WIN_RATE_MODES.amount
+        ? PNL_WIN_RATE_MODES.amount
+        : PNL_WIN_RATE_MODES.days;
+      renderPnlSummaryStatementModal(
+        lightbox.dataset.pnlSymbol || state.symbol,
+        lightbox.dataset.pnlMonth || state.yearMonth,
+        state.pnlSummaryStatementMode
       );
       return;
     }
