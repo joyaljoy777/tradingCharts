@@ -1599,7 +1599,7 @@ window.TRADING_CHART_EMBEDDED_DATA = {
               "total_trades_took": 1
             },
             {
-              "date": "08-05-2026",
+              "date": "11-05-2026",
               "profit": 42217.5,
               "loss": 0,
               "maximum_capital_deployed": 232534.9,
