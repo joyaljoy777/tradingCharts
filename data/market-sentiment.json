@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-11T10:18:13.301Z",
+  "generatedAt": "2026-05-11T13:28:26.235Z",
   "source": "yahoo-finance-chart",
   "successCount": 6,
   "staleCount": 0,
@@ -19,7 +19,7 @@
       "arrow": "↓",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-11T10:18:13.301Z",
+      "fetchedAt": "2026-05-11T13:28:26.235Z",
       "errorMessage": ""
     },
     {
@@ -36,7 +36,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-11T10:18:13.301Z",
+      "fetchedAt": "2026-05-11T13:28:26.235Z",
       "errorMessage": ""
     },
     {
@@ -53,7 +53,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-11T10:18:13.301Z",
+      "fetchedAt": "2026-05-11T13:28:26.235Z",
       "errorMessage": ""
     },
     {
@@ -70,7 +70,7 @@
       "arrow": "↓",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-11T10:18:13.301Z",
+      "fetchedAt": "2026-05-11T13:28:26.235Z",
       "errorMessage": ""
     },
     {
@@ -87,7 +87,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-11T10:18:13.301Z",
+      "fetchedAt": "2026-05-11T13:28:26.235Z",
       "errorMessage": ""
     },
     {
@@ -95,16 +95,16 @@
       "label": "Crude Oil (WTI)",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/commodities/crude-oil-streaming-chart",
-      "current": 97.74,
+      "current": 96.88,
       "previousClose": 95.42,
-      "change": 2.319999999999993,
-      "pct": 2.431356109830217,
+      "change": 1.4599999999999937,
+      "pct": 1.5300775518759104,
       "sentiment": "Strong Bullish",
       "trendGroup": "bullish",
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-11T10:18:13.301Z",
+      "fetchedAt": "2026-05-11T13:28:26.235Z",
       "errorMessage": ""
     }
   ]
