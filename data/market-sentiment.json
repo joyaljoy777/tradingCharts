@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-14T09:58:28.073Z",
+  "generatedAt": "2026-05-14T10:11:18.699Z",
   "source": "yahoo-finance-chart",
   "successCount": 6,
   "staleCount": 0,
@@ -10,16 +10,16 @@
       "label": "GIFT NIFTY(NIFTY NSE)",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/%5ENSEI?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/indices/gift-nifty-50-c1-futures-chart",
-      "current": 23716.5,
+      "current": 23689.6,
       "previousClose": 23412.6,
-      "change": 303.90000000000146,
-      "pct": 1.2980190154019693,
+      "change": 277,
+      "pct": 1.1831236171975774,
       "sentiment": "Strong Bullish",
       "trendGroup": "bullish",
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-14T09:58:28.073Z",
+      "fetchedAt": "2026-05-14T10:11:18.699Z",
       "errorMessage": ""
     },
     {
@@ -36,7 +36,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-14T09:58:28.073Z",
+      "fetchedAt": "2026-05-14T10:11:18.699Z",
       "errorMessage": ""
     },
     {
@@ -53,7 +53,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-14T09:58:28.073Z",
+      "fetchedAt": "2026-05-14T10:11:18.699Z",
       "errorMessage": ""
     },
     {
@@ -70,7 +70,7 @@
       "arrow": "↓",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-14T09:58:28.073Z",
+      "fetchedAt": "2026-05-14T10:11:18.699Z",
       "errorMessage": ""
     },
     {
@@ -87,7 +87,7 @@
       "arrow": "↑",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-14T09:58:28.073Z",
+      "fetchedAt": "2026-05-14T10:11:18.699Z",
       "errorMessage": ""
     },
     {
@@ -95,16 +95,16 @@
       "label": "Crude Oil (WTI)",
       "quoteUrl": "https://query1.finance.yahoo.com/v8/finance/chart/CL=F?range=1d&interval=1d",
       "chartUrl": "https://www.investing.com/commodities/crude-oil-streaming-chart",
-      "current": 100.94,
+      "current": 100.91,
       "previousClose": 101.02,
-      "change": -0.0799999999999983,
-      "pct": -0.07919223916056058,
+      "change": -0.10999999999999943,
+      "pct": -0.10888932884577257,
       "sentiment": "Mild Bearish",
       "trendGroup": "bearish",
       "arrow": "↓",
       "isAvailable": true,
       "isStale": false,
-      "fetchedAt": "2026-05-14T09:58:28.073Z",
+      "fetchedAt": "2026-05-14T10:11:18.699Z",
       "errorMessage": ""
     }
   ]
