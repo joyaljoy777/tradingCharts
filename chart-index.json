@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-15T18:35:04.237Z",
+  "generatedAt": "2026-05-15T18:59:44.900Z",
   "entries": [
     {
       "path": "charts/BANKNIFTY/2026/April/1-04-2026.png",
@@ -1074,8 +1074,12 @@
       "url": "./charts/P_AND_L_AND_LEARNINGS/2026/may/15-05-2026_5.png"
     },
     {
-      "path": "charts/P_AND_L_AND_LEARNINGS/2026/may/15-05-2026_6.jpg",
-      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/may/15-05-2026_6.jpg"
+      "path": "charts/P_AND_L_AND_LEARNINGS/2026/may/15-05-2026_6.png",
+      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/may/15-05-2026_6.png"
+    },
+    {
+      "path": "charts/P_AND_L_AND_LEARNINGS/2026/may/15-05-2026_7.jpg",
+      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/may/15-05-2026_7.jpg"
     }
   ]
 }
