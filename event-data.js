@@ -1630,8 +1630,8 @@ window.TRADING_CHART_EMBEDDED_DATA = {
               "profit": 0,
               "loss": 61863.75,
               "maximum_capital_deployed": 256095.45,
-              "brokerage_and_net_charges": 5000,
-              "total_traded_value": 0,
+              "brokerage_and_net_charges": 4042.55,
+              "total_traded_value": 2353640.25,
               "total_trades_took": 6
             }
           ],
