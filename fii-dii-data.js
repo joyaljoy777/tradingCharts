@@ -1,5 +1,5 @@
 window.TRADING_CHART_FII_DII_DATA = {
-  "generatedAt": "2026-05-14T16:01:32.445Z",
+  "generatedAt": "2026-05-15T10:10:19.866Z",
   "files": [
     "2022.json",
     "2023.json",
