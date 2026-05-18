@@ -1638,10 +1638,10 @@ window.TRADING_CHART_EMBEDDED_DATA = {
               "date": "18-05-2026",
               "profit": 0,
               "loss": 80041,
-              "maximum_capital_deployed": 0,
+              "maximum_capital_deployed": 178107.15,
               "brokerage_and_net_charges": 2000,
               "total_traded_value": 0,
-              "total_trades_took": 6
+              "total_trades_took": 2
             }
           ],
           "holiday": [

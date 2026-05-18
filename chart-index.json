@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-18T14:10:44.123Z",
+  "generatedAt": "2026-05-18T14:14:31.969Z",
   "entries": [
     {
       "path": "charts/BANKNIFTY/2026/April/1-04-2026.png",
@@ -1100,6 +1100,10 @@
     {
       "path": "charts/P_AND_L_AND_LEARNINGS/2026/may/18-05-2026_3.jpg",
       "url": "./charts/P_AND_L_AND_LEARNINGS/2026/may/18-05-2026_3.jpg"
+    },
+    {
+      "path": "charts/P_AND_L_AND_LEARNINGS/2026/may/18-05-2026_4.jpeg",
+      "url": "./charts/P_AND_L_AND_LEARNINGS/2026/may/18-05-2026_4.jpeg"
     }
   ]
 }
