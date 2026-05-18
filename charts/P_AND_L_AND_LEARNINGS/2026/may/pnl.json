@@ -85,8 +85,8 @@
     "profit": 0,
     "loss": 80041.00,
     "maximum_capital_deployed": 178107.15,
-    "brokerage_and_net_charges": 2000,
-    "total_traded_value": 0,
+    "brokerage_and_net_charges": 886.44,
+    "total_traded_value": 498140.50,
     "total_trades_took": 2
   }
 ]
