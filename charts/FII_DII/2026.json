@@ -1185,6 +1185,32 @@
         "last_trade_price": 23649.95,
         "change_value": 6.45,
         "change_per": 0.03
+      },
+      {
+        "created_at": "2026-05-19T00:00:00",
+        "fii_buy_value": 17907.55,
+        "fii_sell_value": 20365.04,
+        "fii_net_value": -2457.49,
+        "dii_buy_value": 16951.95,
+        "dii_sell_value": 13150.27,
+        "dii_net_value": 3801.68,
+        "symbol_name": "NIFTY 50",
+        "last_trade_price": 23618.00,
+        "change_value": -31.95,
+        "change_per": -0.14
+      },
+      {
+        "created_at": "2026-05-20T00:00:00",
+        "fii_buy_value": 14139.56,
+        "fii_sell_value": 15736.91,
+        "fii_net_value": -1597.35,
+        "dii_buy_value": 16000.79,
+        "dii_sell_value": 14032.44,
+        "dii_net_value": 1968.35,
+        "symbol_name": "NIFTY 50",
+        "last_trade_price": 23659.00,
+        "change_value": 41.00,
+        "change_per": 0.17
       }
     ],
     "fii_dii_summary_data": [
@@ -1246,17 +1272,17 @@
       },
       {
         "month": "2026-05",
-        "created_at": "2026-05-18T00:00:00",
-        "fii_buy_value": 172209.37,
-        "fii_sell_value": 194051.50,
-        "fii_net_value": -21842.13,
-        "dii_buy_value": 208214.18,
-        "dii_sell_value": 165614.68,
-        "dii_net_value": 42599.50,
+        "created_at": "2026-05-20T00:00:00",
+        "fii_buy_value": 204256.48,
+        "fii_sell_value": 230153.45,
+        "fii_net_value": -25896.97,
+        "dii_buy_value": 241166.92,
+        "dii_sell_value": 192797.39,
+        "dii_net_value": 48369.53,
         "symbol_name": "NIFTY 50",
-        "last_trade_price": 23649.95,
-        "change_value": 6.45,
-        "change_per": 0.03
+        "last_trade_price": 23659.00,
+        "change_value": 41.00,
+        "change_per": 0.17
       }
     ]
   }

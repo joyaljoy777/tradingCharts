@@ -1,5 +1,5 @@
 window.TRADING_CHART_FII_DII_DATA = {
-  "generatedAt": "2026-05-18T14:14:32.041Z",
+  "generatedAt": "2026-05-20T15:21:31.626Z",
   "files": [
     "2022.json",
     "2023.json",
@@ -6967,6 +6967,22 @@ window.TRADING_CHART_FII_DII_DATA = {
       "diiNet": 2682.12,
       "net": 5495.81,
       "niftyClose": 23649.95
+    },
+    {
+      "isoDate": "2026-05-19",
+      "monthKey": "2026-05",
+      "fiiNet": -2457.49,
+      "diiNet": 3801.68,
+      "net": 1344.19,
+      "niftyClose": 23618
+    },
+    {
+      "isoDate": "2026-05-20",
+      "monthKey": "2026-05",
+      "fiiNet": -1597.35,
+      "diiNet": 1968.35,
+      "net": 371,
+      "niftyClose": 23659
     }
   ]
 };
